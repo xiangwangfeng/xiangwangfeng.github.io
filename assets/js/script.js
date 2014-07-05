@@ -11,10 +11,10 @@ if ($(window).width() <= 1280) {
 }
 
 // Variables
-    tag1       = $('.tag_default'),
-    tag2       = $('.tag_ios'),
-    tag3       = $('.tag_windows'),
-    tag4       = $('.tag_other'),
+    tag1       = $('default'),
+    tag2       = $('ios'),
+    tag3       = $('windows'),
+    tag4       = $('other'),
 var sidebar    = $('#sidebar'),
     container  = $('#post'),
     content    = $('#pjax'),
