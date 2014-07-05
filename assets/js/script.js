@@ -11,7 +11,7 @@ if ($(window).width() <= 1280) {
 }
 
 // Variables
-    tag1       = $('.pl__all'),
+    tag1       = $('.全部文章'),
     tag2       = $('.iOS开发'),
     tag3       = $('.Windows开发'),
     tag4       = $('.其他'),
