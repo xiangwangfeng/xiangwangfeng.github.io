@@ -11,10 +11,10 @@ if ($(window).width() <= 1280) {
 }
 
 // Variables
-    tag1       = $('.全部文章'),
-    tag2       = $('.iOS开发'),
-    tag3       = $('.Windows开发'),
-    tag4       = $('.其他'),
+    tag1       = $('.tag_default'),
+    tag2       = $('.tag_ios'),
+    tag3       = $('.tag_windows'),
+    tag4       = $('.tag_other'),
 var sidebar    = $('#sidebar'),
     container  = $('#post'),
     content    = $('#pjax'),
