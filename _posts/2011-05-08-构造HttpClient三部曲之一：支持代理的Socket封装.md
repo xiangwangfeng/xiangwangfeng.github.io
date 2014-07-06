@@ -173,9 +173,9 @@ Socks5是Socks4的一个升级版本，增加了很多Socks4不支持的特性�
 这样一个完整的Socks5握手协议就算完成了，但是鉴于代码篇幅太长了，这里就不上了，等整个HttpClient介绍完毕后再统一上代码…….（实际上是…某些地方的代码还没整清爽，无颜见公婆啊）
 
 ##参考资料
-1.Wiki中关于Sock5的介绍：http://en.wikipedia.org/wiki/SOCKS
-2.《Http Tunneling》：http://www.codeproject.com/KB/IP/httptunneling.aspx
-3.《CAsyncProxySocket – CAsyncSocket derived class to connect through proxies》：http://www.codeproject.com/KB/IP/casyncproxysocket.aspx
+* Wiki中关于Sock5的介绍：http://en.wikipedia.org/wiki/SOCKS
+* 《Http Tunneling》：http://www.codeproject.com/KB/IP/httptunneling.aspx
+* 《CAsyncProxySocket – CAsyncSocket derived class to connect through proxies》：http://www.codeproject.com/KB/IP/casyncproxysocket.aspx
 
 [1]:/images/http_proxy.jpg
 
