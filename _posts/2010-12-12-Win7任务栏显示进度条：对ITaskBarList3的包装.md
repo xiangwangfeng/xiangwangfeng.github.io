@@ -10,7 +10,7 @@ title: Win7任务栏显示进度条：对ITaskBarList3的包装
 
 于是相应的只能采取比较取巧的方法，因为本身ITaskBarList3是基于COM的，所以我们只要提供一个正确的GUID和相应方法定义即可，跑WIN7 SDK的include文件下把ITaskBarList3的定义整理出来即可：
 ITaskBarList3.h
-```C++
+{% highlight C++ %} 
 #ifndef __ITaskbarList3_INTERFACE_DEFINED__
 #define __ITaskbarList3_INTERFACE_DEFINED__
 /* interface ITaskbarList3 */
@@ -51,7 +51,7 @@ STDMETHOD (SetThumbnailClip)     (HWND hwnd, RECT *prcClip) PURE;
 #else     /* C style interface */
 #endif     /* C style interface */
 #endif     /* __ITaskbarList3_INTERFACE_DEFINED__ */
-```
+ {% endhighlight %}
 
 
 配置整完了，使用就很简单了，就三步(进度条)：
