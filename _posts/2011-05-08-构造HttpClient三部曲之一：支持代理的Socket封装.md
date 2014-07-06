@@ -14,19 +14,7 @@ title:  构造HttpClient三部曲之一：支持代理的Socket封装
 
 当客户端连接上一个HTTP代理服务器后并通过它发送请求，代理服务器做的事情就是：建立和目标地址的连接，发送请求，接受反馈并将反馈发回客户端。为了实现这一点，在HTTP协议中规定了这么一个特殊方法：CONNECT。当客户端和HTTP代理服务器连接后，只需要发送如下格式的HTTP请求即可：
 
-CONNECT <destanation_address> : <destanition_port> <http_version><CR><LF>          
-Host: <destanation_address> : <destanition_port><CR><LF> 
-<optional_header_line><CR><LF> 
-<optional_header_line><CR><LF> 
-…… 
-<CR><LF>而如果代理需要验证用户名密码则需要将"用户名：密码"进行Base64编码后填入：
-CONNECT <destanation_address> : <destanition_port> <http_version><CR><LF>          
-Host: <destanation_address> : <destanition_port><CR><LF> 
-Authorization: Basic <base64后的验证字段><CR><LF> 
-Proxy-Authorization: <Basic base64后的验证字段><CR><LF> 
-<optional_header_line><CR><LF> 
-…… 
-<CR><LF>
+![][1]
 
 
 {% highlight C++ %}
@@ -160,10 +148,12 @@ Socks5是Socks4的一个升级版本，增加了很多Socks4不支持的特性�
 * 字段3：用户名，变长
 * 字段4：密码长度，一个字节
 * 字段5：密码，变长
+
 服务端返回如下的反馈：
 
 * 字段1：版本号，一个字节 (这个其实可以忽略)
 * 字段2：状态码，一个字节，0×00表示成功，其他值则表示验证失败，连接需要断开。
+
 这以后的工作就基本和Sock4相似了，客户端发起一个连接请求：
 
 * 字段1：Socks版本号，一个字节，即0×05
@@ -187,6 +177,7 @@ Socks5是Socks4的一个升级版本，增加了很多Socks4不支持的特性�
 2.《Http Tunneling》：http://www.codeproject.com/KB/IP/httptunneling.aspx
 3.《CAsyncProxySocket – CAsyncSocket derived class to connect through proxies》：http://www.codeproject.com/KB/IP/casyncproxysocket.aspx
 
+[1]:/images/http_proxy.jpg
 
 
 
