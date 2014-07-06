@@ -52,6 +52,8 @@ STDMETHOD (SetThumbnailClip)     (HWND hwnd, RECT *prcClip) PURE;
 #endif     /* C style interface */
 #endif     /* __ITaskbarList3_INTERFACE_DEFINED__ */
 ```
+
+
 配置整完了，使用就很简单了，就三步(进度条)：
 
  1. CoCreate ITaskbarList3接口
