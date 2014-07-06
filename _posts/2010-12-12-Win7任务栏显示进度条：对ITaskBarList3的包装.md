@@ -10,8 +10,8 @@ title: Win7任务栏显示进度条：对ITaskBarList3的包装
 
 于是相应的只能采取比较取巧的方法，因为本身ITaskBarList3是基于COM的，所以我们只要提供一个正确的GUID和相应方法定义即可，跑WIN7 SDK的include文件下把ITaskBarList3的定义整理出来即可：
 ITaskBarList3.h
-
-    #ifndef __ITaskbarList3_INTERFACE_DEFINED__
+```C++
+#ifndef __ITaskbarList3_INTERFACE_DEFINED__
 #define __ITaskbarList3_INTERFACE_DEFINED__
 /* interface ITaskbarList3 */
 /* [object][uuid] */
@@ -51,7 +51,7 @@ STDMETHOD (SetThumbnailClip)     (HWND hwnd, RECT *prcClip) PURE;
 #else     /* C style interface */
 #endif     /* C style interface */
 #endif     /* __ITaskbarList3_INTERFACE_DEFINED__ */
-
+```
 配置整完了，使用就很简单了，就三步(进度条)：
 
  1. CoCreate ITaskbarList3接口
@@ -64,6 +64,7 @@ STDMETHOD (SetThumbnailClip)     (HWND hwnd, RECT *prcClip) PURE;
 DWORD WM_TASKBARCREATED = ::RegisterWindowMessage(L"TaskbarButtonCreated");
  2. 在非UI线程中调用接口相应的方法是无效的，而且更加诡异的是这个接口本身对这方面有任何出错处理或者提示(至少在DEBUG下有相应的ASSERT出来也是好的)，无论在哪个线程调用相应接口都是返回S_OK。所以需要一个转发消息的窗口进行消息的转发来实现线程的转换，这也是对这个接口进行封装的最大理由。（PS：感谢老汉老汉告知原来在CreateEx时传入HWMD_MESSAGE的参数可以创建一个仅做消息转发而无需更多资源的窗口）
  3. 一些必要的出错处理，比如对系统类型的判断。
+
 包装完后就有了一个简单的的用于任务栏进度条显示的类,具体的测试代码和工程可以参考这里：[单击下载][1]
 
 [1]:http://amaoproject.googlecode.com/files/ProgressTaskBar.7z
