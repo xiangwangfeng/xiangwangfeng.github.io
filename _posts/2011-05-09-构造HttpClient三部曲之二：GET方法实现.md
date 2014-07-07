@@ -10,9 +10,13 @@ HTTP协议的交互主要由请求和响应组成：客户端发起请求，服�
 
 ##HTTP请求之GET
 一个最简单的HTTP GET请求可以写成：
-GET <resouce_path> <http_version> <CR><LF>         
-HOST : <host_address><CR><LF> 
-<CR><LF>
+
+GET <resouce\_path> <http\_version> <CR\><LF\> 
+        
+HOST : <host\_address><CR\><LF\> 
+
+<CR\><LF\>
+
 而复杂的请求往往会加入很多的请求头域，如：
 > GET /logos/2011/hargreaves11-hp-15.jpg HTTP/1.1 
 Host: www.google.com.hk 
@@ -24,7 +28,7 @@ Accept-Encoding: gzip,deflate,sdch
 Accept-Language: zh-CN,zh;q=0.8 
 Accept-Charset: GBK,utf-8;q=0.7,*;q=0.3
 
-每一个头域都有一个域名，冒号(：)和域值组成。域名是大小写无关，而域值前面可以添加数个空格。之所以将前面那段字特地高亮是因为碰到很多“不太规范”的HTTP Server返回的域名经常是不“正规”的：比如将Content-Type写成Content-type—-这只是从视觉上不太美观，但是绝对是符合规范的，所以客户端在解析的时候特别要注意忽略大小写的影响。
+每一个头域都由一个域名，冒号(：)和域值组成。域名是大小写无关，而域值前面可以添加数个空格。之所以将前面那段字特地高亮是因为碰到很多“不太规范”的HTTP Server返回的域名经常是不“正规”的：比如将Content-Type写成Content-type—-这只是从视觉上不太美观，但是绝对是符合规范的，所以客户端在解析的时候特别要注意忽略大小写的影响。
 
 一些典型的头域有：
 
