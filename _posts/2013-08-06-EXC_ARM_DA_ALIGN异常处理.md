@@ -3,7 +3,7 @@ layout: post
 title:  EXC_ARM_DA_ALIGN异常处理
 ---
 
- 前几天无聊晃到Matt Galloway的博客，看到一篇[《ARM Hacking：EXC_ARM_DA_ALIGN  Exception》][1] ，时间是2010年，突然有种穿越了的感觉：去年服务器的帐号从字符串改成uint64后，ios版客户端时不时抛EXC_ARM_DA_ALIGN异常，而我最终hack的方法也和Matt Galloway的一样，所以记上一笔，方便中文搜索的童鞋们。
+ 前几天无聊晃到Matt Galloway的博客，看到一篇[《ARM Hacking：EXC_ARM_DA_ALIGN  Exception》][1] ，时间是2010年，突然有种穿越了的感觉：去年服务器的帐号从字符串改成uint64后，ios版客户端时不时抛EXC_ARM_DA_ALIGN异常，而我最终hack的方法也和Matt Galloway的一样，所以记上一笔，方便中文搜索的童鞋们。我们定义了一种从buffer中获取uint64的方法:
 
 {% highlight objc %}
  uint64_t pop_uint64() const

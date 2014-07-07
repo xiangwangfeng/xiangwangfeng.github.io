@@ -3,13 +3,13 @@ layout: post
 title:  UIScrollView表情选择的实现
 ---
 
-前几天做即时通上表情选择的功能，结果不幸用了Windows上的老套路，思路错步步错，越写越感觉进入了死胡同，白白浪费了一下午，然后突然开窍，轻松解决——于是乎有必要记录下相关的细节。
+前几天做即时通上表情选择的功能，结果不幸用了Windows上的老套路，思路错步步错，越写越感觉进入了死胡同，白白浪费了一下午，然后突然开窍，轻松解决，有必要记录下相关的细节。
 
 情景很简单，做一个选择表情的界面，功能无非是点击弹出一个ScrollView，上面排列一些表情，然后通过拖曳或者点击的方式选择表情。具体可以参考iPad版QQ的操作。
 
 一开始的思路很Windows化，既然UIView有touchesBegan相关的4种事件，基本可以映射成Windows上的MouseDown，MouseMove和MouseUp，那么很简单，在ScrollView的SuperView上响应这四个事件即可：当touchesBegan的时候通过hitTest找到ScrollView中的相应表情，并生成其拷贝，然后在touchesMoved的时候不断改变这份拷贝的位置，最后在touchEnded的时候销毁相应拷贝，并发送选择的通知给接收端即可。但实施的时候碰到了各种问题：
 
-* ScrollView是当前View中的First Responder，也就意味着在ScrollView内部触发的事件都会优先发给它，由他直接处理并丢弃。——-解决这个问题的方法很简单，自定义一个类，继承ScrollView并在响应完相应触摸事件之后将事件传递给它的NextResponder，也就是它的SuperView处理。
+* ScrollView是当前View中的First Responder，也就意味着在ScrollView内部触发的事件都会优先发给它，由他直接处理并丢弃。解决这个问题的方法很简单，自定义一个类，继承ScrollView并在响应完相应触摸事件之后将事件传递给它的NextResponder，也就是它的SuperView处理。
 * SrcollView的touchesMoved事件实际上并不被ScrollView直接处理！纳尼？从自己试验和stackoverflow上的一些问答可以知道ScrollView并不直接处理touchesMoved事件，换而言之，即使你继承了ScrollView重写相应方法还是无效。
 
 于是貌似陷入了死胡同。不过在查阅各种资料的时候，突然发现了一种特别的做法(其实应该算是iOS下比较常规的做法，不过从Windows过来的童鞋可能会觉得比较奇怪)：自定义ScrollView内的表情，以它为First Responder去响应触摸事件即可。看了DEMO，突然回忆起一早看的官网上看到的一段话，恍然大悟：

@@ -65,7 +65,7 @@ Content-Type: image/jpeg
 
 HTTP消息头中指明了content-type为multipart/form-data并给出了boundary。boundary的主要作用是进行分割HTTP消息体中的内容，一般的格式都是前面带几个“-”号，然后跟一堆随机字符。整个HTTP消息体以boundary+两个"-"做结尾。
 
-至于HTTP响应就和GET方法是一样的，不赘述了。关于POST相关的代码可以参考[这里][2]。
+关于POST相关的代码可以参考[这里][2]。
 
 
   [1]: http://www.utoronto.ca/webdocs/HTMLdocs/Book/Book-3ed/appb/mimetype.html

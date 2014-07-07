@@ -4,7 +4,7 @@ title:  构造HttpClient三部曲之二：GET方法实现
 ---
 
 
-继续HttpClient构造的博文，第二篇：GET方法的实现。HTTP协议定义了和服务器交互的不同方法，包括GET,POST,PUT,DELETE,CONNECT等等，但是最基本的同时也是用的最多的两个方法就是GET和POST。这篇先讲讲GET方法的一些细节。
+继续HttpClient构造的博文，第二篇：GET方法的实现。HTTP协议定义了和服务器交互的不同方法，包括GET,POST,PUT,DELETE,CONNECT等等，其中最常用的两个方法就是GET和POST。这篇先讲讲GET方法的一些细节。
 
 HTTP协议的交互主要由请求和响应组成：客户端发起请求，服务端返回响应。而一个简单的HTTP请求又可以分成信息头和信息体。但对于GET来说，它的请求只有HTTP消息头而已。
 
@@ -34,7 +34,7 @@ Accept-Charset: GBK,utf-8;q=0.7,*;q=0.3
 当然我们也可以往HTTP头中塞入一些自定义的头域，这样的效果和在URL添加请求参数的效果是一样的。
 
 ##HTTP响应
-无论是GET方法还是POST方法，HTTP的响应都是一致的：一个HTTP消息头和一个HTTP消息体。在HTTP消息头的第一行指定了：HTTP版本号，HTTP响应码和详细消息。而接下来就是一个个头域，直到接受到两个<CR><LF>为止。一个典型的HTTP相应的消息头如下：
+无论是GET方法还是POST方法，HTTP的响应都是一致的：一个HTTP消息头和一个HTTP消息体。在HTTP消息头的第一行指定了：HTTP版本号，HTTP响应码和详细消息。而接下来就是一个个头域，直到接受到两个\r\n为止。一个典型的HTTP相应的消息头如下：
 > HTTP/1.1 200 OK
 Cache-Control: private, max-age=30
 Content-Type: text/html; charset=utf-8
