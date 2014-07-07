@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  构造HttpClient三部曲之三:POST方法实现
+title:  构造HttpClient三部曲之三：POST方法实现
 ---
 
 手机新买，新鲜感未过，几乎一天都在安装试用卸载各种搞毛软件中度过，差点忘了要在这周结束掉HttpClient的博文，趁着还有3个小时才12点赶紧写完。
