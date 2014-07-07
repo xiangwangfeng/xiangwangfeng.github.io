@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "iOS Development Tips(1)"
+title:  iOS Development Tips(1)
 ---
 
 ipad即时通开发基本完毕，由于前期基本是边学边做，在很多方面都不是很小心，犯了很多错误，趁着刚洗完澡，手还热乎着，将以前总结的一些Tips整理一下，主要是UI和动画方面，备用。
