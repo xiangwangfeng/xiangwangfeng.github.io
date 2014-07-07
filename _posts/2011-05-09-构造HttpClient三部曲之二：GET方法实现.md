@@ -66,8 +66,8 @@ Chunked-Body   = *chunk
        trailer        = *(entity-header CRLF)
 {% endhighlight %}
 简单来说就是：一个chunked编码的body可以分为四个部分：一系列的chunk段，last chunk，trailer和CRLF。一个chunk又可以分为chunk-size和chunk-data两部分。通过解析chunk-size(16进制)可以获取到真正的chunk-data长度并进行拼接得到最后的HTTP体内容。RFC中关于chunk的解析伪代码如下：
-
-> length := 0
+{% highlight c %}
+  length := 0
 　　read chunk-size, chunk-ext (if any) and CRLF
 　　while (chunk-size > 0) {
 　　read chunk-data and CRLF
@@ -82,67 +82,8 @@ Chunked-Body   = *chunk
 　　}
 　　Content-Length := length
 　　Remove "chunked" from Transfer-Encoding
-　
-
-为了构造这个HTTPClient我也相应写了C++版的处理方法，不过没有考虑chunk-extension和entity-header的处理(在我测试的几个网站来看都没有这两个值，所以即使写了也无法验证其正确性)，将这部分片段摘录如下：
-{% highlight C++ %}
-//接受并解析chunk内容
-while(true)
-{
-	//如果在上次已经查询到第一块chunk的大小
-	if (find_first_chunk)
-	{
-		if (chunk_size == 0)//如果是最后一块了
-		{
-			complete = true;
-			break;
-		}
-		else    //否则分析chunk内容并进行切割
-		{
-			size_t length        = body.length();
-			size_t first_chunk    = chunk_size_length + 2 + chunk_size + 2;
-			if (length >= first_chunk)    //如果已经接受到一整块chunkdata了则进行切割，否则重新接受
-			{
-				find_first_chunk        = false;
-				std::string chunk_data    = body.substr(chunk_size_length + 2, chunk_size);
-				body.erase(0,first_chunk);
-				if (!response_receiver->write(chunk_data.c_str(),chunk_data.length()))
-				{
-					setErrorCode(HTTPERROR_IO);
-					break;
-				}
-			}
-			else
-			{
-				if (!continueToReceiveBody(body))
-				{
-					setErrorCode(HTTPERROR_TRANSPORT);
-					break;
-				}
-			}
-		}
-	}
-	else//查找chunk_size
-	{
-		size_t index = body.find("\r\n");
-		if (index != std::string::npos)        //找到，做标记
-		{
-			find_first_chunk            = true;
-			chunk_size_length            = (int)index;
-			std::string raw_chunk_size    = body.substr(0,chunk_size_length);
-			chunk_size                    = (int)strtoul(raw_chunk_size.c_str(),0,16);
-		}
-		else    //没有找到，继续接受信息
-		{
-			if (!continueToReceiveBody(body))
-			{
-				setErrorCode(HTTPERROR_TRANSPORT);
-				break;
-			}
-		}
-	}
-}
 {% endhighlight %}
+为了构造这个HTTPClient我也相应写了C++版的处理方法，不过没有考虑chunk-extension和entity-header的处理(在我测试的几个网站来看都没有这两个值，所以即使写了也无法验证其正确性)。
 至此一个完整的GET方法HTTP请求响应就完成了，相应的代码checkout这里：http ://amaoproject.googlecode.com/svn/trunk/。
 
 [1]:/images/http_get.jpg
