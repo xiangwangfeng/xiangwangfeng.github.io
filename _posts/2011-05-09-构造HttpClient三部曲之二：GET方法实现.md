@@ -10,13 +10,7 @@ HTTP协议的交互主要由请求和响应组成：客户端发起请求，服�
 
 ##HTTP请求之GET
 一个最简单的HTTP GET请求可以写成：
-
-GET <resouce\_path> <http\_version> <CR\><LF\> 
-        
-HOST : <host\_address><CR\><LF\> 
-
-<CR\><LF\>
-
+![][1]
 而复杂的请求往往会加入很多的请求头域，如：
 > GET /logos/2011/hargreaves11-hp-15.jpg HTTP/1.1 
 Host: www.google.com.hk 
@@ -150,3 +144,5 @@ while(true)
 }
 {% endhighlight %}
 至此一个完整的GET方法HTTP请求响应就完成了，相应的代码checkout这里：http ://amaoproject.googlecode.com/svn/trunk/。
+
+[1]:/images/http_get.jpg
