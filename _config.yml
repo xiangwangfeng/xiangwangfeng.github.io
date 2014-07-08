@@ -6,8 +6,8 @@ pygments:         true
 permalink:        pretty
 
 # Setup
-title:            阿毛的蛋疼帝
-tagline:          'a'
+title:            阿毛的蛋疼地
+tagline:          ''
 baseurl:          '/'
 paginate:         5
 
