@@ -7,7 +7,7 @@ permalink:        pretty
 
 # Setup
 title:            阿毛的蛋疼地
-tagline:          ''
+description:      '阿毛的蛋疼地'
 baseurl:          'http://xiangwangfeng.github.io/'
 paginate:         15
 
