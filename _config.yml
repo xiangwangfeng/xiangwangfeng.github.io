@@ -9,7 +9,7 @@ permalink:        pretty
 title:            阿毛的蛋疼地
 tagline:          ''
 baseurl:          'http://xiangwangfeng.github.io/'
-paginate:         5
+paginate:         15
 
 author:
   name:           'Xiang Wangfeng'
