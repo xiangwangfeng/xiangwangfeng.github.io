@@ -8,7 +8,6 @@ permalink:        pretty
 # Setup
 title:            阿毛的蛋疼地
 description:      '阿毛的蛋疼地'
-baseurl:          '/'
 paginate:         12
 
 author:
