@@ -8,8 +8,8 @@ permalink:        pretty
 # Setup
 title:            阿毛的蛋疼地
 description:      '阿毛的蛋疼地'
-baseurl:          'http://xiangwangfeng.github.io/'
-paginate:         15
+baseurl:          '/'
+paginate:         12
 
 author:
   name:           'Xiang Wangfeng'
