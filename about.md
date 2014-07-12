@@ -11,14 +11,19 @@ title: About
 
 喜欢造各种小轮子，已出产如下轮子：
 
-* TinyImage：一个微信的图片编辑库(教学用) 
-* HttpClient：Windows C++ HTTP库 
-* aui：一个微型的DirectUI框架实现
-* M80AttributedLabel：基于CoreText的富文本Label
+* [TinyImage][1]：一个微信的图片编辑库(教学用) 
+* [HttpClient][2]：Windows C++ HTTP库 
+* [aui][3]：一个微型的DirectUI框架实现
+* [M80AttributedLabel][4]：基于CoreText的富文本Label
 
 
 ##Contact
-* Email :xiangwangfeng@gmail.com
-* Weibo :http://weibo.com/epmao	
-* github:https://github.com/xiangwangfeng
+* Email 	:xiangwangfeng@gmail.com
+* Weibo 	:http://weibo.com/epmao	
+* Github	:https://github.com/xiangwangfeng
+* Comments	:https://github.com/xiangwangfeng/xiangwangfeng.github.io
 
+[1]:https://github.com/xiangwangfeng/tinyimage
+[2]:https://github.com/xiangwangfeng/httpclient
+[3]:https://github.com/xiangwangfeng/aui
+[4]:https://github.com/xiangwangfeng/M80AttributedLabel

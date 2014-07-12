@@ -84,6 +84,6 @@ Chunked-Body   = *chunk
 　　Remove "chunked" from Transfer-Encoding
 {% endhighlight %}
 为了构造这个HTTPClient我也相应写了C++版的处理方法，不过没有考虑chunk-extension和entity-header的处理(在我测试的几个网站来看都没有这两个值，所以即使写了也无法验证其正确性)。
-至此一个完整的GET方法HTTP请求响应就完成了，相应的代码checkout这里：http ://amaoproject.googlecode.com/svn/trunk/。
+
 
 [1]:/images/http_get.jpg

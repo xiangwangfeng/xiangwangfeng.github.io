@@ -69,4 +69,4 @@ HTTP消息头中指明了content-type为multipart/form-data并给出了boundary�
 
 
   [1]: http://www.utoronto.ca/webdocs/HTMLdocs/Book/Book-3ed/appb/mimetype.html
-  [2]: http://code.google.com/p/amaoproject/source/browse/trunk/httpclient/httpclient/http_client.cpp
+  [2]: https://github.com/xiangwangfeng/httpclient

@@ -69,4 +69,4 @@ DWORD WM_TASKBARCREATED = ::RegisterWindowMessage(L"TaskbarButtonCreated");
 
 包装完后就有了一个简单的的用于任务栏进度条显示的类,具体的测试代码和工程可以参考这里：[单击下载][1]
 
-[1]:http://amaoproject.googlecode.com/files/ProgressTaskBar.7z
+[1]:https://github.com/xiangwangfeng/amao_misc/blob/master/Demos/ProgressTaskBar.7z
