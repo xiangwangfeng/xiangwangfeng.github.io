@@ -11,7 +11,7 @@ title: About
 
 喜欢造各种小轮子，已出产如下轮子：
 
-* [TinyImage][1]：一个微信的图片编辑库(教学用) 
+* [TinyImage][1]：一个微型的图片编辑库(教学用) 
 * [HttpClient][2]：Windows C++ HTTP库 
 * [aui][3]：一个微型的DirectUI框架实现
 * [M80AttributedLabel][4]：基于CoreText的富文本Label
