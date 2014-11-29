@@ -185,7 +185,7 @@ didReceiveResponse:(NSURLResponse *)response
 }
 @end
 {% endhighlight %}
-但是这样带来的问题是如果不小心在UI线程(好吧，就不应该允许UI线程上这么来)调用了请求就会导致线程堵死崩溃。一种改进的方法是使用NSRunLoop
+但是这样带来的问题是在UI线程调用同步请求就会导致线程堵死崩溃(好吧，就不应该允许UI线程上这么做)。一种改进的方法是使用NSRunLoop
 
 即：
 {% highlight objc %}
@@ -197,7 +197,7 @@ didReceiveResponse:(NSURLResponse *)response
 {% endhighlight %}
 
 
-但是这种写法是有**大坑**的：如果当前NSRunLoop内中并没有任何NSTimer和Input Source，这个runMode:beforeDate:将立刻返回NO，直接造成死循环，占用大量CPU，进而导致NSURLConnection请求超时。 规避的方法是往RunLoop中添加NSTimer或者空NSPort使得NSRunLoop挂起而不占用CPU。(ASIHttpRequest就是在当前RunLoop中添加了0.25秒触发一次的刷新Timer)
+但是这种写法是有**大坑**的：如果当前NSRunLoop并没有任何NSTimer或Input Source，runMode:beforeDate:方法将立刻返回NO，于是造成死循环，占用大量CPU，进而导致NSURLConnection请求超时。 规避的方法是往RunLoop中添加NSTimer或者空NSPort使得NSRunLoop挂起而不占用CPU。(ASIHttpRequest就是在当前RunLoop中添加了0.25秒触发一次的刷新Timer)
 
 **If no input sources or timers are attached to the run loop, this method exits immediately and returns NO; otherwise, it returns after either the first input source is processed or limitDate is reached. Manually removing all known input sources and timers from the run loop does not guarantee that the run loop will exit immediately. OS X may install and remove additional input sources as needed to process requests targeted at the receiver’s thread. Those sources could therefore prevent the run loop from exiting.**
 
