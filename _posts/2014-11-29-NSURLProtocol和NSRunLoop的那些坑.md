@@ -11,12 +11,12 @@ title:  NSURLProtocol和NSRunLoop的那些坑
 * 对特定的地址进行CDN加速(URL到IP的替换)
 * 怎么实现HTTP的同步请求
 
-前三个需求对于ASIHttpReqeust来说都不是问题，只需要在几个统一的点进行修改即可。而使用AFNetworking后没有这么容易：一方面AFNetworking中生成NSURLRequest的点比较多，并没有一个统一的路径。其次工程会有一部分直接使用NSURLConnecion。经[cyzju](http://msching.github.io/)提醒发现有cocoa中有NSURLProtocol这种奇葩的大杀器，可惜对应的文档过于简略，唯一比较详细的就只有[RW的这篇教程](http://www.raywenderlich.com/59982/nsurlprotocol-tutorial)而已，掉了很多坑，值得记上一笔。
+前三个需求对于ASIHttpReqeust来说都不是问题，只需要在几个统一的点进行修改即可。而使用AFNetworking后就没有那么容易了：一方面AFNetworking中生成NSURLRequest的点比较多，并没有一个统一的路径。其次工程中会有部分直接使用NSURLConnecion的场景，无法统一。经[cyzju](http://msching.github.io/)提醒发现了NSURLProtocol这个大杀器，可惜对应的文档过于简略，唯一比较详细的介绍就只有[RW的这篇教程](http://www.raywenderlich.com/59982/nsurlprotocol-tutorial)而已，掉了很多坑，值得记上一笔。
 
 # NSURLProtocol
 ## 概念
 
-NSURLProtocol也是苹果众多黑魔法中一样，使用它可以轻松地重定义整个URL Loading System。当你注册自定义NSURLProtocol后，就有机会对所有的请求进行统一的处理，基于这一点它可以让你
+NSURLProtocol也是苹果众多黑魔法中的一种，使用它可以轻松地重定义整个URL Loading System。当你注册自定义NSURLProtocol后，就有机会对所有的请求进行统一的处理，基于这一点它可以让你
 
 * 自定义请求和响应
 * 提供自定义的全局缓存支持
@@ -30,10 +30,10 @@ NSURLProtocol也是苹果众多黑魔法中一样，使用它可以轻松地重�
 [NSURLProtocol registerClass:[YXURLProtocol class]];
 {% endhighlight %}
 
-当NSURLConnection准备发起请求时，它会遍历所有已注册的NSURLProtocol，询问它们能否能够处理当前请求。所以你需要尽早注册这个Protocol。
+当NSURLConnection准备发起请求时，它会遍历所有已注册的NSURLProtocol，询问它们能否处理当前请求。所以你需要尽早注册这个Protocol。
 
 ### 实现NSURLProtocol的相关方法
-当遍历到我们自定义的NSURLProtocol时，系统先会调用canInitWithRequest:这个方法。顾名思义，这是整个流程的入口，只有这个方法返回YES我们才能够继续后续的处理。我们可以在这个方法的实现里面进行请求的过滤，筛选出需要进行自定义处理的请求。
+当遍历到我们自定义的NSURLProtocol时，系统先会调用canInitWithRequest:这个方法。顾名思义，这是整个流程的入口，只有这个方法返回YES我们才能够继续后续的处理。我们可以在这个方法的实现里面进行请求的过滤，筛选出需要进行处理的请求。
 {% highlight objc %}
 + (BOOL)canInitWithRequest:(NSURLRequest *)request
 {
@@ -49,7 +49,7 @@ NSURLProtocol也是苹果众多黑魔法中一样，使用它可以轻松地重�
 }
 {% endhighlight %}
 
-当筛选出需要处理的请求后，就需要进行自定义的处理，需要分别实现如下4个方法
+当筛选出需要处理的请求后，就可以进行后续的处理，需要至少实现如下4个方法
 
 {% highlight objc %}
 + (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request
@@ -85,10 +85,10 @@ NSURLProtocol也是苹果众多黑魔法中一样，使用它可以轻松地重�
 
 * canonicalRequestForRequest: 返回规范化后的request,一般就只是返回当前request即可。
 * requestIsCacheEquivalent:toRequest: 用于判断你的自定义reqeust是否相同，这里返回默认实现即可。它的主要应用场景是某些直接使用缓存而非再次请求网络的地方。
-* startLoading和stopLoading分别实现请求和停止流程。
+* startLoading和stopLoading 实现请求和取消流程。
 
 ### 实现NSURLConnectionDelegate和NSURLConnectionDataDelegate
-因为在第二步中我们接管了整个请求过程，所以需要实现相应的协议并使用NSURLProtocolClient将消息回传给URL Loading System。
+因为在第二步中我们接管了整个请求过程，所以需要实现相应的协议并使用NSURLProtocolClient将消息回传给URL Loading System。在我们的场景中推荐实现所有协议。
 {% highlight objc %}
 
 - (void)connection:(NSURLConnection *)connection
@@ -162,14 +162,14 @@ didReceiveResponse:(NSURLResponse *)response
 
 **It is up to each concrete protocol implementation to define what “canonical” means. A protocol should guarantee that the same input request always yields the same canonical form.**
 
-所谓的canonical form到底是什么呢？而围观了包括[NSEtcHosts](https://github.com/mattt/NSEtcHosts)和[RNCachingURLProtocol](https://github.com/rnapier/RNCachingURLProtocol)在内的实现，它们都是直接返回当前request。如果在这个方法内进行request的修改非常容易递归调用(即使通过setProperty:forKey:inRequest:对请求打了标记)
+所谓的canonical form到底是什么呢？而围观了包括[NSEtcHosts](https://github.com/mattt/NSEtcHosts)和[RNCachingURLProtocol](https://github.com/rnapier/RNCachingURLProtocol)在内的实现，它们都是直接返回当前request。在这个方法内进行request的修改非常容易导致递归调用(即使通过setProperty:forKey:inRequest:对请求打了标记)
 
 * 坑2：没有实现足够的回调方法导致各种奇葩问题。如connection:willSendRequest:redirectResponse:
-内如果没有通过[self client]回传消息，那么需要重定向的网页就会出现问题:host不对甚至造成跨域导致资源无法加载。
+内如果没有通过[self client]回传消息，那么需要重定向的网页就会出现问题:host不对或者造成跨域调用导致资源无法加载。
 
 
 # 同步AFNetworking请求
-虽然Mattt在AFN的issue或者so上各种鄙视要做同步网络请求的需求，但是我们不可否认某些场景下使用同步调用所带来的便利性。一种比较简单的实现是直接使用信号量做同步：
+虽然Mattt各种鄙视同步做网络请求，但是我们不可否认某些场景下使用同步调用会带来不少便利。一种比较简单的实现是使用信号量做同步：
 {% highlight objc %}
 @implementation AFHTTPRequestOperation (YX)
 - (void)yxStartSynchronous
@@ -197,9 +197,9 @@ didReceiveResponse:(NSURLResponse *)response
 {% endhighlight %}
 
 
-但是这种写法是有**大坑**的：如果当前NSRunLoop内中没有任何NSTimer和Input Source，这个runMode:beforeDate:将立刻返回NO，直接造成死循环，占用大量CPU，结果就是低端机上程序因无法相应其他事件而引起NSURLConnection的请求超时。 规避的方法是往RunLoop中添加NSTimer或者空NSPort使得NSRunLoop挂起而不占用CPU。(像ASIHttpRequest就是在当前请求RunLoop中添加了0.25秒触发一次的刷新Timer)
+但是这种写法是有**大坑**的：如果当前NSRunLoop内中并没有任何NSTimer和Input Source，这个runMode:beforeDate:将立刻返回NO，直接造成死循环，占用大量CPU，进而导致NSURLConnection请求超时。 规避的方法是往RunLoop中添加NSTimer或者空NSPort使得NSRunLoop挂起而不占用CPU。(ASIHttpRequest就是在当前RunLoop中添加了0.25秒触发一次的刷新Timer)
 
-** If no input sources or timers are attached to the run loop, this method exits immediately and returns NO; otherwise, it returns after either the first input source is processed or limitDate is reached. Manually removing all known input sources and timers from the run loop does not guarantee that the run loop will exit immediately. OS X may install and remove additional input sources as needed to process requests targeted at the receiver’s thread. Those sources could therefore prevent the run loop from exiting.**
+**If no input sources or timers are attached to the run loop, this method exits immediately and returns NO; otherwise, it returns after either the first input source is processed or limitDate is reached. Manually removing all known input sources and timers from the run loop does not guarantee that the run loop will exit immediately. OS X may install and remove additional input sources as needed to process requests targeted at the receiver’s thread. Those sources could therefore prevent the run loop from exiting.**
 
 
 
