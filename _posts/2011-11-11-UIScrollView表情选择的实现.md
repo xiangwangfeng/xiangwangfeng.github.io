@@ -61,7 +61,7 @@ title:  UIScrollView表情选择的实现
     [self cleanClone];
 }
 {% endhighlight %}
-这样一个简单的表情拖曳的功能就算完成了，详细的代码可以参考这里：[点此下载][1] 。(XCode4.2)
+这样一个简单的表情拖曳的功能就算完成了，详细的代码可以参考这里：[点此下载][1] 。(XCode4.2) 
 
 
   [1]: https://github.com/xiangwangfeng/amao_misc/blob/master/Demos/DragDropDemo.7z

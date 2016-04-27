@@ -11,7 +11,7 @@ Google了一番，发现：一般命令行的程序对于SIGPIPE的处理是直�
 signal(SIGPIPE,SIG_IGN)
 * 设置当前socket在进行写操作时不产生SIGPIPE。
 int set = 1;
-setsockopt(sd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+setsockopt(sd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int)); 
 
 这样做的好处在于：在某些情况 下我们并不需要一个全局的SIGPIPE handler。但是据说这种并不通用，在linux下没有相应的定义—-但我在mac下测试通过。
 参考资料:

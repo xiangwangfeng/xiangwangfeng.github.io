@@ -13,7 +13,8 @@ title:  iOS文字排版(CoreText)那些事
 直接拿了Nimbus的AttributedLabel作为基础，然后重新整理图文混排那部分的代码，调整接口，一共也就花了一个晚上的时间：拜一下Nimbus的作者。后来也根据项目的需求做了一些小改动，比如hack iOS7下计算size不准的问题，Label上支持添加UIView的特性等等。最新的代码可以在github上找到:[M80AttributedLabel][2]。
 不过写这篇文章最重要的原因不是为了放个代码出来，而是在闲暇时整理一下iOS/OSX文字排版相关的知识。
 
-##文字排版的基础概念
+## 文字排版的基础概念
+
 * 字体(Font)：和我们平时说的字体不同，计算机意义上的字体表示的是同一大小，同一样式(Style)字形的集合。从这个意义上来说，当我们为文字设置粗体，斜体时其实是使用了另外一种字体(下划线不算)。而平时我们所说的字体只是具有相同设计属性的字体集合，即Font Family或typeface。
 * 字符(Character)和字形(Glyphs)：排版过程中一个重要的步骤就是从字符到字形的转换，字符表示信息本身，而字形是它的图形表现形式。字符一般指某种编码，如Unicode编码，而字形则是这些编码对应的图片。但是他们之间不是一一对应关系，同个字符的不同字体族，不同字体大小，不同字体样式都对应了不同的字形。而由于连写(Ligatures)的存在，也会出现多个字符对应一个字形的情况。
 ![此处输入图片的描述][3]
@@ -31,7 +32,9 @@ title:  iOS文字排版(CoreText)那些事
 ![此处输入图片的描述][6]
 红框高度既为当前行的行高，绿线为baseline，绿色到红框上部分为当前行的最大Ascent，绿线到黄线为当前行的最大Desent，而黄框的高即为行间距。由此可以得出：lineHeight = Ascent + |Decent| + Leading。
 更加详细的内容可以参考苹果的这篇文档： [《Cocoa Text Architecture Guide》][7]。当然如果要做到更完善的排版，还需要掌握段落排版(Paragragh Style)相关的知识，但是如果只是完成聊天框内的文字排版，以上的基础知识已经够用了。详细的段落样式相关知识可以参考： [《Ruler and Paragraph Style Programming Topics》][8]
-##CoreText
+
+## CoreText
+
 iOS/OSX中用于描述富文本的类是NSAttributedString，顾名思义，它比NSString多了Attribute的概念。它可以包含很多属性，粗体，斜体，下划线，颜色，背景色等等，每个属性都有其对应的字符区域。在OSX上我们只需解析完毕相应的数据，准备好NSAttributedString即可，底层的绘制完全可以交给相应的控件完成。但是在iOS上就没有这么方便，想要绘制Attributed String就需要用到CoreText了。(当然iOS6之后已经有AttributedLabel了。)
 使用CoreText进行NSAttributedString的绘制，最重要的两个概念就是CTFrameSetter和CTFrame。他们的关系如下：
 
@@ -40,7 +43,8 @@ iOS/OSX中用于描述富文本的类是NSAttributedString，顾名思义，它�
 一个CTFrame是由一行一行的CLine组成，每个CTLine又会包含若干个CTRun(既字形绘制的最小单元)，通过相应的方法可以获取到不同位置的CTRun和CTLine，实现对不同位置touch事件的响应。
 ![此处输入图片的描述][10]
 
-##图文混排的实现
+## 图文混排的实现
+
 CoreText实际上并没有相应API直接将一个图片转换为CTRun并进行绘制，它所能做的只是为图片预留相应的空白区域，而真正的绘制则是交由CoreGraphics完成。(像OSX就方便很多，直接将图片打包进NSTextAttachment即可，根本无须操心绘制的事情，所以基于这个想法，M80AttributedLabel的接口和实现也是使用了attachment这么个概念，图片或者UIView都是被当作文字段中的attachment。)
 在CoreText中提供了CTRunDelegate这么个Core Foundation类，顾名思义它可以对CTRun进行拓展：AttributedString某个段设置kCTRunDelegateAttributeName属性之后，CoreText使用它生成CTRun是通过当前Delegate的回调来获取自己的ascent，descent和width，而不是根据字体信息。这样就给我们留下了可操作的空间：用一个空白字符作为图片的占位符，设好Delegate，占好位置，然后用CoreGraphics进行图片的绘制。以下就是整个图文混排代码描述的过程：
 占位：

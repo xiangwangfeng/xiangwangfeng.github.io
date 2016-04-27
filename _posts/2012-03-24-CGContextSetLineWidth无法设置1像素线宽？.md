@@ -13,7 +13,7 @@ title:  CGContextSetLineWidth无法设置1像素线宽？
 > CGContextMoveToPoint(context, 100.5, 100.5); CGContextAddLineToPoint(context, 100.5, 200.5);
 
 
-这是因为：所谓的线宽指的是给定路径的中心到两边的粗细，换句话是在路径的两边各绘制一半。如图
+这是因为：所谓的线宽指的是给定路径的中心到两边的粗细，换句话是在路径的两边各绘制一半。如图 
 ![此处输入图片的描述][1]
 
 

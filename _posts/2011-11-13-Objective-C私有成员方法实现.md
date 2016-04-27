@@ -17,7 +17,7 @@ title:  Objective-C私有成员方法实现
 @implementation AClass
 - (void)publicMethod{...}
 - (void)privateMethod;{...} 
-@end
+@end 
 
 这样因为privateMethod隐藏于.m中，调用类并不能直接通过.h看到其声明，等于间接实现了私有成员方法。当然网上也有各种教程是使用分类(Categories)而非类拓展，不过相比于分类，使用类拓展有两个明显的好处：
 

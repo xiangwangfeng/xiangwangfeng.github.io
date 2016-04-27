@@ -8,7 +8,9 @@ title:  构造HttpClient三部曲之二：GET方法实现
 
 HTTP协议的交互主要由请求和响应组成：客户端发起请求，服务端返回响应。而一个简单的HTTP请求又可以分成信息头和信息体。但对于GET来说，它的请求只有HTTP消息头而已。
 
-##HTTP请求之GET
+
+## HTTP请求之GET
+
 一个最简单的HTTP GET请求可以写成：
 ![][1]
 而复杂的请求往往会加入很多的请求头域，如：
@@ -33,7 +35,10 @@ Accept-Charset: GBK,utf-8;q=0.7,*;q=0.3
 * Accept：可接受的文件类型
 当然我们也可以往HTTP头中塞入一些自定义的头域，这样的效果和在URL添加请求参数的效果是一样的。
 
-##HTTP响应
+
+## HTTP响应
+
+
 无论是GET方法还是POST方法，HTTP的响应都是一致的：一个HTTP消息头和一个HTTP消息体。在HTTP消息头的第一行指定了：HTTP版本号，HTTP响应码和详细消息。而接下来就是一个个头域，直到接受到两个\r\n为止。一个典型的HTTP相应的消息头如下：
 > HTTP/1.1 200 OK
 Cache-Control: private, max-age=30

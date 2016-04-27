@@ -29,7 +29,7 @@ uint64_t pop_uint64() const
 {% endhighlight %}
 不过比较奇怪的是：既然是基于WORD对齐，那么我们反序列化的代码里访问非4倍数内存地址并强制转换出int的代码也应该会抛出异常，而事实却是只有对double，int64这种8字节数据类型的非对齐访问才会出错，可能和处理器本身是32位有关。而且从理论上来说这种硬件层面的异常也不应该抛到APP层，系统自己默默消化就好了。
 
-最后吐槽下Matt Galloway的新书《Effective Objective-C》真心贵，亚马逊上竟然卖300多一本，一个月的零食费啊=。=
+最后吐槽下Matt Galloway的新书《Effective Objective-C》真心贵，亚马逊上竟然卖300多一本，一个月的零食费啊=。= 
 
 
   [1]: http://www.galloway.me.uk/2010/10/arm-hacking-exc_arm_da_align-exception/

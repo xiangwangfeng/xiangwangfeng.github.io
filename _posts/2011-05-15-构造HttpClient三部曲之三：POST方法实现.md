@@ -6,7 +6,9 @@ title:  构造HttpClient三部曲之三：POST方法实现
 手机新买，新鲜感未过，几乎一天都在安装试用卸载各种搞毛软件中度过，差点忘了要在这周结束掉HttpClient的博文，趁着还有3个小时才12点赶紧写完。
 
 上一篇介绍了GET方法的实现，这篇主要就介绍介绍POST。从上层来看，GET和POST最大的区别在于GET是一种从服务器获取数据的请求，而POST是向服务器传送数据，进行站点更新。而从协议上来看，POST和GET的最大区别在于：POST请求是包含HTTP消息体的，较GET能够实现更复杂的数据交互。通过上一篇我们已经知道一个GET请求是只有HTTP消息头的，虽然它也能够带上参数：将参数和请求的URL以?分开，但是一来请求的数据量很少，二来因为请求格式的固定化导致不能有效表达一些复杂的请求，而POST则没有这样的问题了。
-##HTTP请求之POST
+
+## HTTP请求之POST
+
 和GET方法不同，POST有自己的HTTP请求体，这样也必然要求POST方法必须在HTTP请求头指明请求体的类型和长度：即content-type和content-length。content-type指明了Http消息体内的数据以怎样的结构进行组织，而content-length则指明了http消息体的长度。一个典型的POST请求如下：
 
 > POST /cwf_nget?param=[] HTTP/1.1 

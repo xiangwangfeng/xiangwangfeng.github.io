@@ -14,7 +14,9 @@ title:  NSURLProtocol和NSRunLoop的那些坑
 前三个需求对于ASIHttpReqeust来说都不是问题，只需要在几个统一的点进行修改即可。而使用AFNetworking后就没有那么容易了：一方面AFNetworking中生成NSURLRequest的点比较多，并没有一个统一的路径。其次工程中会有部分直接使用NSURLConnecion的场景，无法统一。经[cyzju](http://msching.github.io/)提醒发现了NSURLProtocol这个大杀器，可惜对应的文档过于简略，唯一比较详细的介绍就只有[RW的这篇教程](http://www.raywenderlich.com/59982/nsurlprotocol-tutorial)而已，掉了很多坑，值得记上一笔。
 
 # NSURLProtocol
+
 ## 概念
+
 
 NSURLProtocol也是苹果众多黑魔法中的一种，使用它可以轻松地重定义整个URL Loading System。当你注册自定义NSURLProtocol后，就有机会对所有的请求进行统一的处理，基于这一点它可以让你
 
@@ -25,7 +27,9 @@ NSURLProtocol也是苹果众多黑魔法中的一种，使用它可以轻松地�
 * 其他一些全局的网络请求修改需求
 
 ## 使用方法
+
 ### 继承NSURLPorotocl，并注册你的NSURLProtocol
+
 {% highlight objc %}
 [NSURLProtocol registerClass:[YXURLProtocol class]];
 {% endhighlight %}
@@ -33,6 +37,7 @@ NSURLProtocol也是苹果众多黑魔法中的一种，使用它可以轻松地�
 当NSURLConnection准备发起请求时，它会遍历所有已注册的NSURLProtocol，询问它们能否处理当前请求。所以你需要尽早注册这个Protocol。
 
 ### 实现NSURLProtocol的相关方法
+
 当遍历到我们自定义的NSURLProtocol时，系统先会调用canInitWithRequest:这个方法。顾名思义，这是整个流程的入口，只有这个方法返回YES我们才能够继续后续的处理。我们可以在这个方法的实现里面进行请求的过滤，筛选出需要进行处理的请求。
 {% highlight objc %}
 + (BOOL)canInitWithRequest:(NSURLRequest *)request
@@ -88,6 +93,7 @@ NSURLProtocol也是苹果众多黑魔法中的一种，使用它可以轻松地�
 * startLoading和stopLoading 实现请求和取消流程。
 
 ### 实现NSURLConnectionDelegate和NSURLConnectionDataDelegate
+
 因为在第二步中我们接管了整个请求过程，所以需要实现相应的协议并使用NSURLProtocolClient将消息回传给URL Loading System。在我们的场景中推荐实现所有协议。
 {% highlight objc %}
 
@@ -156,6 +162,7 @@ didReceiveResponse:(NSURLResponse *)response
 在每个delgate的实现中我都刨去了工程中的特定实现(流量统计)，只保留了需要实现的最小Protocol集合。
 
 ## NSURLProtocol那些坑
+
 从上面的介绍来看，NSURLProtocol还是比较简单，但是实际使用的过程中却容易掉进各种坑，一方面是文档不够详尽，另一方面也是对于苹果这套URL Loading Sytem并不熟悉，不能将整个调用过程有机地统一。
 
 * 坑1：企图在canonicalRequestForRequest:进行request的自定义操作，导致各种递归调用导致连接超时。这个API的表述其实很暧昧:
@@ -169,6 +176,7 @@ didReceiveResponse:(NSURLResponse *)response
 
 
 # 同步AFNetworking请求
+
 虽然Mattt各种鄙视同步做网络请求，但是我们不可否认某些场景下使用同步调用会带来不少便利。一种比较简单的实现是使用信号量做同步：
 {% highlight objc %}
 @implementation AFHTTPRequestOperation (YX)
