@@ -3,7 +3,8 @@ layout: page
 title: About
 ---
 
-##Me
+## Me
+
 
 阿毛，杭州猪场全职iOS开发一枚
 
@@ -17,7 +18,9 @@ title: About
 * [M80AttributedLabel][4]：基于CoreText的富文本Label
 
 
-##Contact
+## Contact
+
+
 * Email 	:xiangwangfeng@gmail.com
 * Weibo 	:http://weibo.com/epmao	
 * Github	:https://github.com/xiangwangfeng
