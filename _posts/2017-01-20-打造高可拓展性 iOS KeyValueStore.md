@@ -37,7 +37,6 @@ title:  打造高可拓展性 iOS KeyValueStore
 那么这里的处理就可以变成通过数据库对象向外提供注入序列化和反序列化方法的接口，由业务方自定义转换过程。
 
 ```objc
-
 typedef NSData *(^Serializer)(NSString *key, id object);
 typedef id(^Deserializer)(NSString *key, NSData *data);
 
@@ -46,8 +45,6 @@ typedef id(^Deserializer)(NSString *key, NSData *data);
 @property (nonatomic,copy)  Serializer  serializer;
 @property (nonatomic,copy)  Deserializer deserializer;
 @end
-
-
 ```
 
 当数据库从表中根据 `Key` 获取到对应 `NSData` 对象后，调用自定义 `Deserializer` 方法进行反序列化，同时缓存解析完毕的 `Model` 到内存。存储过程也是同样，通过自定义的 `Serializer` 方法，将传入对象按照自定义规则转换为 `NSData` 并最终持久化。
@@ -61,9 +58,7 @@ typedef id(^Deserializer)(NSString *key, NSData *data);
 这样我们的数据库表就可以表示为
 
 ```sql
-
 CREATE TABLE IF NOT EXISTS dbname (key TEXT PRIMARY KEY,value BLOB,metadata BLOB)
-
 ```
 
 而我们的存储接口也从 `setObject:forKey:` 变成了 `setObject:forKey:metadata:`。
@@ -80,9 +75,7 @@ CREATE TABLE IF NOT EXISTS dbname (key TEXT PRIMARY KEY,value BLOB,metadata BLOB
 第一种过于繁琐，为了完成简单存储需求引入过多零散文件，而第二种则略显原始，同时将实现细节暴露给上层：上层需要关心如何组装。最好的办法自然使用数据库 `unique` 特性，直接加入分组：
 
 ```sql
-
 CREATE TABLE IF NOT EXISTS dbname (rowid INTEGER PRIMARY KEY,bucket TEXT, key TEXT ,value BLOB,metadata BLOB,UNIQUE(bucket,key))
-
 ```
 
 那么我们的存储接口也从 `setObject:forKey:metadata:` 变成了 `setObject:forKey:metadata:inBucket:`。
@@ -90,7 +83,6 @@ CREATE TABLE IF NOT EXISTS dbname (rowid INTEGER PRIMARY KEY,bucket TEXT, key TE
 上面提到的自定义序列化和反序列化过程也需要做相应的调整，变成如下定义
 
 ```objc
-
 typedef NSData *(^Serializer)(NSString *bucket,NSString *key, id object);
 typedef id(^Deserializer)(NSString *bucket,NSString *key, NSData *data);
 
@@ -107,9 +99,7 @@ typedef id(^Deserializer)(NSString *bucket,NSString *key, NSData *data);
 
 
 ```objc
-
 typedef NSDictionary*(^KeyValueStoreIndexBlock)(NSString *collection, NSString *key, id object);
-
 ```
 
 这样整个存储过程就变成
