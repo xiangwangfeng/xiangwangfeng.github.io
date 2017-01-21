@@ -119,7 +119,7 @@ typedef NSDictionary*(^KeyValueStoreIndexBlock)(NSString *collection, NSString *
 - (NSArray *)query:(NSString *)condition;
 ```
 
-但传入 `condition = "where timetag > 0"` 时 `KeyValueStore` 自动将对应请求转换为可执行的 `SQL` 语句，并从索引表中获取对应动态对应的 `rowId` 列表，再通过 `rowId` 在主表中进行反查出所有的信息。
+当传入 `condition = "where timetag > 0"` 时 `KeyValueStore` 自动将对应请求转换为可执行的 `SQL` 语句，并从索引表中获取对应的 `rowId` 列表，再通过 `rowId` 在主表中进行反查出所有的信息。
 
 
 # 结论
