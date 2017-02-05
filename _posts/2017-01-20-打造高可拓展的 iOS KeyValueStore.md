@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  打造高可拓展性 iOS KeyValueStore
+title:  打造高可拓展的 iOS KeyValueStore
 ---
 
 # 前言
