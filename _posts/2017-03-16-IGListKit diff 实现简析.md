@@ -18,11 +18,11 @@ title:  IGListKit diff 实现简析
 
 ## 算法介绍
 
-`IGListDiff` 使用一个额外的哈希表 `HashTable` 和两个新旧哈希列表 `Hashentry List` 使得比较的算法复杂度从 O(n^2) 变成 O(n)。一个 `Hashentry` 都需要定义四个信息
+`IGListDiff` 使用一个额外的哈希表和两个新旧哈希列表 `hash entry list` 使得比较的算法复杂度从 O(n^2) 变成 O(n)。一个 `Hashentry` 都需要定义四个信息
 	
 	
 ```objc
-	/// Used to track data stats while diffing.
+/// hash entry
 struct IGListentry {
     /// 记录旧队列中相同 hash 值对象个数
     NSInteger oldCounter = 0;
