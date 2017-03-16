@@ -10,7 +10,7 @@ title:  IGListKit diff 实现简析
 整个思路比较新颖又很简洁，即使不直接使用这个框架，也可以按照思路依葫芦画瓢做出自己的简易版方案。不过今天要讲的并不是 `IGListKit` 本身，而是扒一扒它里面的 `IGListDiff` 实现。
 
 
-相比于前端各种各样 `Virtual DOM diff` 实现，移动端在这方面较为欠缺。在 `UITableView` 和 `UICollectionView` 的使用上，一旦同时发生数据删除，更新，添加时，我们的做法往往是手动计算出变化 `NSIndexPaths` 并调用批量刷新，甚至简单粗暴地调用 `reloadData` 做一次全刷新。而 `IGListKit` 的 `IGListDiff` 正是为这种场景而生：当数据变化产生后，通过调用 `IGListDiff` 自动计算前后两次的差值，为后续批量刷新提供数据。整个算法的复杂度为 O(n)，相当高效。
+相比于前端各种各样 `Virtual DOM diff` 实现，移动端在这方面较为欠缺。在 `UITableView` 和 `UICollectionView` 的使用上，一旦同时发生数据删除，更新，添加时，我们的做法往往是手动计算出变化 `NSIndexPaths` 并调用批量刷新，甚至简单粗暴地调用 `reloadData` 做一次全刷新。而 `IGListKit` 的 `IGListDiff` 正是为这种场景而生：当数据变化产生后，通过调用 [IGListDiff](https://github.com/Instagram/IGListKit/blob/master/Source/Common/IGListDiff.mm) 自动计算前后两次的差值，为后续批量刷新提供数据。整个算法的复杂度为 O(n)，相当高效。
 
 
 # IGList Diff
@@ -18,7 +18,7 @@ title:  IGListKit diff 实现简析
 
 ## 算法介绍
 
-`IGListDiff` 使用一个额外的哈希表和两个新旧哈希列表 `hash entry list` 使得比较的算法复杂度从 O(n^2) 变成 O(n)。一个 `Hashentry` 都需要定义四个信息
+`IGListDiff` 使用一个额外的哈希表和两个新旧哈希列表 `hash entry list` 使得比较的算法复杂度从 O(n^2) 变成 O(n)。一个 `hash entry` 需要定义
 	
 	
 ```objc
