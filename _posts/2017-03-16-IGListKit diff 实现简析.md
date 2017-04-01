@@ -18,7 +18,7 @@ title:  IGListKit diff 实现简析
 
 ## 算法介绍
 
-`IGListDiff` 使用一个额外的哈希表和两个新旧哈希列表 `hash entry list` 使得比较的算法复杂度从 O(n^2) 变成 O(n)。一个 `hash entry` 需要定义
+`IGListDiff` 使用一个额外的哈希表和两个新旧哈希列表 `hash entry list` 使得比较的算法复杂度从 O(n^2) 变成 O(n)。一个 `hash entry` 定义为
 	
 	
 ```objc
