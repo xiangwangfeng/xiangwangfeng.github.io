@@ -59,7 +59,7 @@ NSError *error = [NSError errorWithDomain:NIMLocalErrorDomain
 {
     NSString *message = [self.messages objectForKey:@(code)];
     return message ? [NSError errorWithDomain:domain
-                                   	    code:code
+                                   	     code:code
                                      userInfo:@{NSLocalizedDescriptionKey : message}] :
                      [NSError errorWithDomain:domain
                                    	     code:code
@@ -82,7 +82,7 @@ NSError *error = [NSError errorWithDomain:NIMLocalErrorDomain
   *  注释内容
  */
  ```
-那么我们只需要检查当前行在 `trim` 后发现当前行是以 `* `开头即可确定当前行为注释行，然后提取即可。
+那么我们只需要检查当前行在 `trim` 后是否以 `* `开头即可确定是否为注释内容行，并加以提取。
 而对于枚举表达式，由于 Objective-C 的特殊性，所有枚举往往都会有自己的固定前缀，如
  
  ```objc
