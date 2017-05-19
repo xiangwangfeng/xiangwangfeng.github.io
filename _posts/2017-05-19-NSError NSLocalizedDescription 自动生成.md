@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  NSError 描述信息自动生成
+title:  NSError NSLocalizedDescription 自动生成
 ---
 
 # 现状
