@@ -15,8 +15,8 @@ title:  NSError NSLocalizedDescription 自动生成
 
 ```objc
 NSError *error = [NSError errorWithDomain:NIMLocalErrorDomain
-                                         code:NIMLocalErrorCodeInvalidParam
-                                     userInfo:nil];
+                                     code:NIMLocalErrorCodeInvalidParam
+                                 userInfo:nil];
 ```
 
 这里我们定义了自己的字符串常量 `NIMLocalErrorDomain` 来表示错误发生域和 `NIMLocalErrorCode` 枚举表示对应的错误码。但一个懒得要死的程序员显然对这种繁琐的初始化方法不感冒，然后就引入了宏定义使自己少写几行代码：
@@ -59,11 +59,11 @@ NSError *error = [NSError errorWithDomain:NIMLocalErrorDomain
 {
     NSString *message = [self.messages objectForKey:@(code)];
     return message ? [NSError errorWithDomain:domain
-                                   code:code
-                               userInfo:@{NSLocalizedDescriptionKey : message}] :
+                                   	    code:code
+                                     userInfo:@{NSLocalizedDescriptionKey : message}] :
                      [NSError errorWithDomain:domain
-                                   code:code
-                               userInfo:nil];          
+                                   	     code:code
+                                     userInfo:nil];          
 }
 ```
 
