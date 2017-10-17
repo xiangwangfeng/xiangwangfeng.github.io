@@ -16,7 +16,7 @@ title: About
 * [HttpClient][2]：Windows C++ HTTP 库 
 * [aui][3]：一个微型的 DirectUI 框架实现
 * [M80AttributedLabel][4]：基于 CoreText 的富文本 Label
-* [Centaur][5]：长图自动智能拼接软件
+* [Centaur][5]:截屏自动拼接软件
 
 
 ## Contact
