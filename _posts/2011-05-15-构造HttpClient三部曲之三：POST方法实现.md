@@ -1,15 +1,15 @@
 ---
 layout: post
-title:  构造HttpClient三部曲之三：POST方法实现
+title:  构造 HttpClient 三部曲之三：POST 方法实现
 ---
 
-手机新买，新鲜感未过，几乎一天都在安装试用卸载各种搞毛软件中度过，差点忘了要在这周结束掉HttpClient的博文，趁着还有3个小时才12点赶紧写完。
+手机新买，新鲜感未过，几乎一天都在安装试用卸载各种搞毛软件中度过，差点忘了要在这周结束掉 HttpClient 的博文，趁着还有 3 个小时才 12 点赶紧写完。
 
-上一篇介绍了GET方法的实现，这篇主要就介绍介绍POST。从上层来看，GET和POST最大的区别在于GET是一种从服务器获取数据的请求，而POST是向服务器传送数据，进行站点更新。而从协议上来看，POST和GET的最大区别在于：POST请求是包含HTTP消息体的，较GET能够实现更复杂的数据交互。通过上一篇我们已经知道一个GET请求是只有HTTP消息头的，虽然它也能够带上参数：将参数和请求的URL以?分开，但是一来请求的数据量很少，二来因为请求格式的固定化导致不能有效表达一些复杂的请求，而POST则没有这样的问题了。
+上一篇介绍了 GET 方法的实现，这篇主要就介绍介绍 POST。从上层来看，GET 和 POST 最大的区别在于 GET 是一种从服务器获取数据的请求，而 POST 是向服务器传送数据，进行站点更新。而从协议上来看，POST 和 GET 的最大区别在于：POST 请求是包含 HTTP 消息体的，较 GET 能够实现更复杂的数据交互。通过上一篇我们已经知道一个 GET 请求是只有 HTTP 消息头的，虽然它也能够带上参数：将参数和请求的 URL 以? 分开，但是一来请求的数据量很少，二来因为请求格式的固定化导致不能有效表达一些复杂的请求，而 POST 则没有这样的问题了。
 
-## HTTP请求之POST
+## HTTP 请求之 POST
 
-和GET方法不同，POST有自己的HTTP请求体，这样也必然要求POST方法必须在HTTP请求头指明请求体的类型和长度：即content-type和content-length。content-type指明了Http消息体内的数据以怎样的结构进行组织，而content-length则指明了http消息体的长度。一个典型的POST请求如下：
+和 GET 方法不同，POST 有自己的 HTTP 请求体，这样也必然要求 POST 方法必须在 HTTP 请求头指明请求体的类型和长度：即 content-type 和 content-length。content-type 指明了 Http 消息体内的数据以怎样的结构进行组织，而 content-length 则指明了 http 消息体的长度。一个典型的 POST 请求如下：
 
 > POST /cwf_nget?param=[] HTTP/1.1 
 Host: friend.renren.com 
@@ -25,9 +25,9 @@ Accept-Language: zh-CN,zh;q=0.8
 Accept-Charset: GBK,utf-8;q=0.7,*;q=0.3
 requestToken=-1000000000
 
-例子中的content-type为application/x-www-form-urlencoded，即需要对HTTP体进行URL编码。而content-length为24，即后面requestToken=-1000000000的长度。当然Content-Type有很多种，比如text/plain，text/xml等等，具体的意义可以参考[这里][1] 。而唯一值得拿出来说的一种content-type是multipart/form-data的情况。顾名思义这种content-type要求HTTP体是以多段的格式发送，主要是为了能够通过HTTP协议上传文件。当然也可以只用这种编码方式来分段上传请求数据，不过不免有点脱裤子放屁之嫌。
+例子中的 content-type 为 application/x-www-form-urlencoded，即需要对 HTTP 体进行 URL 编码。而 content-length 为 24，即后面 requestToken=-1000000000 的长度。当然 Content-Type 有很多种，比如 text/plain，text/xml 等等，具体的意义可以参考[这里][1] 。而唯一值得拿出来说的一种 content-type 是 multipart/form-data 的情况。顾名思义这种 content-type 要求 HTTP 体是以多段的格式发送，主要是为了能够通过 HTTP 协议上传文件。当然也可以只用这种编码方式来分段上传请求数据，不过不免有点脱裤子放屁之嫌。
 
-一个典型的以multipart/form-data上传文件的Http包如下：
+一个典型的以 multipart/form-data 上传文件的 Http 包如下：
 > POST /upload HTTP/1.1 
 Host: upload.buzz.163.com 
 Connection: keep-alive 
@@ -59,15 +59,15 @@ Content-Type: image/jpeg
 …………………….?C…….    ..    . 
 . 
 …………………………………………..?…d.d……….?………………………?B………… 
-…………..!1A."Q..2aq?.#態?Rbr偙$4DSUct儞擦佯?……………..曘膇X.s菢t=5Y鰦.?.敠婂糩輾纽脡昍獛.h塱7鶛フ3?xA/.[B}.渀hn提挮mN笢菨扦.跍Ni?胘?祻?牛S喁膷 
-;.g鉉`.逽枻%.9歩)<€?芋s    鼠狿鍸h?P竐>犚倳攧侽!Θ.俰F?!Z €u€币雽?j.頎??雙iZG%? ?堈..Ie湊趻?.r.-l?.n(#洓’b.,$? y@)虏J堧蟁訷YF攬偧I蘵嶮診    繡`|摥薫?. PG? 
-(此处删去N多字节….)
+…………..!1A."Q..2aq?.# 態? Rbr 偙 $4DSUct 儞擦佯?…………….. 曘膇 X.s 菢 t=5Y 鰦.?. 敠婂糩輾纽脡昍獛. h 塱 7 鶛フ3?xA/.[B}. 渀 hn 提挮 mN 笢菨扦. 跍 Ni? 胘? 祻? 牛 S 喁膷 
+;.g 鉉 `. 逽枻 %.9 歩)<€? 芋 s    鼠狿鍸 h?P竐>犚倳攧侽!Θ. 俰 F?!Z €u€币雽? j. 頎?? 雙 iZG%? ? 堈..Ie 湊趻?.r.-l?.n(# 洓’b.,$? y@)虏 J 堧蟁訷 YF 攬偧 I 蘵嶮診    繡 `| 摥薫?. PG? 
+(此处删去 N 多字节….)
 ——WebKitFormBoundaryoF81IsooBo64lBY2–
 
 
-HTTP消息头中指明了content-type为multipart/form-data并给出了boundary。boundary的主要作用是进行分割HTTP消息体中的内容，一般的格式都是前面带几个“-”号，然后跟一堆随机字符。整个HTTP消息体以boundary+两个"-"做结尾。
+HTTP 消息头中指明了 content-type 为 multipart/form-data 并给出了 boundary。boundary 的主要作用是进行分割 HTTP 消息体中的内容，一般的格式都是前面带几个 “-” 号，然后跟一堆随机字符。整个 HTTP 消息体以 boundary + 两个 "-" 做结尾。
 
-关于POST相关的代码可以参考[这里][2]。
+关于 POST 相关的代码可以参考[这里][2]。
 
 
   [1]: http://www.utoronto.ca/webdocs/HTMLdocs/Book/Book-3ed/appb/mimetype.html
