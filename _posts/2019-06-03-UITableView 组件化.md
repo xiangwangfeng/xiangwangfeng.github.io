@@ -9,15 +9,15 @@ title:  UITableView 组件化
 
 * 繁琐的重用流程
 
-几乎所有 TableView Adapter 中都有如下的代码 `registerClass(Nib):forCellReuseIdentifier` 来保证 cell 的重用。然而千篇一律的注册方法，写多了难免乏味，而如何给 reuseIdentifier 设置一个有意义的值又会成为各个强迫症程序员的烦恼之一。
+几乎所有 TableView Adapter 中都有如下的代码 `registerClass(Nib):forCellReuseIdentifier` 来保证 cell 的重用。然而千篇一律的注册方法，写多了难免乏味。同时如何给 cell 设置一个有意义的 reuseIdentifier 又会成为强迫症程序员的烦恼之一。
 
 * 不安全的 model 和 cell 映射关系
 
-随着业务深入，一个 UITableView 中往往会包含多种 model 对应多种 cell，那么建立 model 和 cell 的映射关系往往会非常蛋疼，无论是if else，switch，还是 map<model,cell> 都不是那么的优雅，每当 model 类型有所增删，开发者往往需要心惊胆战地 review 各个实现方法里是否正确添加/删除了相应的映射关系。
+随着业务深入，一个 UITableView 往往会包含多种 model，对应就有多重不同的 cell，那么建立 model 和 cell 的映射关系就会非常蛋疼，无论是if else，switch，还是 map<model,cell> 都不是那么的优雅，每当 model 类型有所增删，开发者往往需要心惊胆战地检查各个实现方法里是否正确添加/删除了相应的映射关系。
 
 * 单调的优化过程
 
-业务继续深入，为了保证相关代码整洁，易于拓展和性能高效，除了维护 model 和 class 关系(`CellFactory`)外，我们往往需要引入不同类型的 adapter 做职责分离：`DataSource` 管理数据源，`LayoutManager` 管理排版和提供预计算高度能力，`CellHeightCache` 进行高度缓存，这种做法可以一定程度减轻代码膨胀的问题。但也不是完美的：套路都是一样的，即使你熟练掌握了这些所谓的设计原则，在实际操作中还是有大量的重复代码，写得多了不免乏味。
+业务继续深入，为了保证相关代码整洁，易于拓展和性能高效，除了维护 model 和 class 关系(`CellFactory`)外，我们往往需要引入不同类型的 adapter 做职责分离：`DataSource` 管理数据源，`LayoutManager` 管理排版和提供预计算高度能力，`CellHeightCache` 进行高度缓存，这种做法可以一定程度减轻代码膨胀的问题。但也不是完美的：套路都是一样的，即使你熟练掌握了这些所谓的设计原则，在实际操作中还是有大量的重复代码，写多了不免乏味。
 
 
 * 数据源和 UI 并非绑定关系
@@ -26,9 +26,9 @@ title:  UITableView 组件化
 
 # 组件化方案
 
-为了解决如上问题，同时也受 IGListKit 和 React.js 的启发，M80TableViewComponent 提出了一种组件化的解决方案，实现类似 React.js 的“单向数据绑定”功能，同时将大量的重复计算归纳在组件内部，上层使用者只需要根据当前业务创建相应组件并组合使用即可。
+为了解决如上问题，同时也受到 IGListKit 和 React.js 的启发，M80TableViewComponent 提出了一种组件化的解决方案，实现类似 React.js 的“单向数据绑定”功能，同时将大量的重复计算归纳在组件内部，上层使用者只需要根据当前业务创建相应组件并组合使用即可。
 
-## 虚拟组件
+## 虚拟 UI 组件
 
 为了实现整个 UITableView 的流程， M80TableViewComponent 引入三个基础类/组件：
 
@@ -75,12 +75,7 @@ title:  UITableView 组件化
 
 ### 自动重用
 
-在使用 UITableView 时，为了保证较高效率，重用 cell 必不可少，一般有以下两个步骤
-
-* 在初始化时向 UITableView 中注册相应的重用 cell 对象/ nib 文件
-* 通过 dequeueReusableCellWithIdentifier 或其他方法获取可重用 cell 并进行设置
-
-作为有洁癖的开发，经常会头痛 reuseIdentifier 该如何取名，而一些粗心的开发则会忘记甚至写错 reuseIdentifier。在使用 M80TableViewComponent 时则没有这方面的问题：每种 component 在第一次被使用时都会根据其上下文自动绑定 reuseIdentifier 和 cellClass 的关系，无需人工干预。
+每一个 M80TableViewCellComponent 在第一次被使用时都会通过 ``在使用 M80TableViewComponent 时则没有这方面的问题：每种 component 在第一次被使用时都会根据其上下文自动绑定 reuseIdentifier 和 cellClass 的关系，无需人工干预。
 
 ### M80ListDiffable 协议
 
