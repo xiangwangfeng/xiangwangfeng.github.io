@@ -28,9 +28,9 @@ title:  UITableView 组件化
 
 为了解决如上问题，同时也受到 IGListKit 和 React.js 的启发，M80TableViewComponent 提出了一种组件化的解决方案，实现类似 React.js 的“单向数据绑定”功能，同时将大量的重复计算归纳在组件内部，上层使用者只需要根据当前业务创建相应组件并组合使用即可。
 
-## 虚拟 UI 组件
+## 基础组件
 
-为了实现整个 UITableView 的流程， M80TableViewComponent 引入三个基础类/组件：
+为了实现整个 UITableView 的流程， M80TableViewComponent 引入三个基础组件：
 
 * M80TableViewComponent
 * M80TableViewSectionComponent
@@ -48,7 +48,7 @@ title:  UITableView 组件化
 
 ![](../images/item_component.png)
 
-这是一个用于文本列表显示的组件，实现最基本组件协议
+这是一个用于文本列表显示的组件，只实现最基本组件协议
 
 * 当前组件对应何种 UITableViewCell：   - (Class)cellClass
 * 当前组件对应的 UITableViewCell 高度是多少: - (CGFloat)height
@@ -67,17 +67,22 @@ title:  UITableView 组件化
 
 ## 特性
 
-看了上述的使用方式后，你很可能将 M80TableViewComponent 当成一个固定的数据源组装方式而已，并没有其他新意。但事实上除了充当数据源外，他还有如下优势
+看了上述的使用方式后，你很可能将 M80TableViewComponent 当成一种固定数据源组装方式而已，并没有其他新意。事实上除了充当数据源外，它还有如下优势
 
 ### 单向绑定
 
-当我们使用组件时，一旦当前 M80TableViewComponent 和 UITableView 关联，后续针对 M80TableViewComponent 的所有操作都会实时反应到 UITableView 之上，包括对 cell component 的移除，刷新，插入，以及 section component 的插入，移除，和刷新。我们不再需要繁琐的通过 controller 同时操作 view 和 model 以保证其一致性，只需要单纯操作 component 即可：component 根据自身层次结构计算对应 UI 层次结构，在修改 component 内部结构的同时也会自动获取到对应的 cell 对象进行修改。这样的做的好处是上层开发只需要关注 component 即可，而不再关心 indexPath 相关的计算过程，从而规避了一些常见的 indexPath 计算越界等问题。
+当我们使用组件时，一旦当前 M80TableViewComponent 和 UITableView 关联，后续针对 M80TableViewComponent 的所有操作都会实时反应到 UITableView 之上，包括对 cell component 的移除，刷新，插入，以及 section component 的插入，移除，和刷新。我们不再需要繁琐的通过 controller 同时操作 view 和 model 以保证其一致性，只需要单纯操作 component 即可：component 根据自身层次结构计算对应 UI 层次结构，在修改 component 内部结构的同时也会自动获取到对应的 cell 对象进行修改。这样的做的好处是上层开发只需要关注 component 即可，而不再关心 indexPath 相关的计算过程，从而规避了一些常见的 indexPath 计算越界问题。
 
 ### 自动重用
 
-每一个 M80TableViewCellComponent 在第一次被使用时都会通过 ``在使用 M80TableViewComponent 时则没有这方面的问题：每种 component 在第一次被使用时都会根据其上下文自动绑定 reuseIdentifier 和 cellClass 的关系，无需人工干预。
+每一个 M80TableViewCellComponent 在第一次被使用时都会通过 `M80TableViewComponentRegister` 根据上下文信息自动绑定 reuseIdentifier 和 cellClass 的关系，完成 cell 重用的第一步。并在后续的 `tableView:cellForRowAtIndexPath:` 方法中获取重用的 cell 进行配置。
 
-### M80ListDiffable 协议
+### 高度优化
+
+M80TableViewCellComponent 自带预计算高度的能力，只需在组装完成后调用 `measure` 方法，cell component 就会自动记录当前内容所需高度以供后续使用。同时整个组件也自带了高度缓存功能，所有的 cell component 都会有自己独一无二的 `diffableHash`，在开启高度重用的选项(`cellHeightCacheEnabled`)时， M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新 UITableView 则自动获取对应的高度而不再需要额外计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，可以通过返回不同的 diffableHash 来实现。
+
+
+### ListDiff
 
 在 iOS 中比较蛋疼的事情是如何判断两个对象相等：在不使用 runtime 的场景下，往往需要业务层添加大量冗余代码用于支持对象比较，而使用了 runtime 又会对业务侵入过多。在 M80TableViewComponent 中我们使用了一种不基于 runtime 且比较轻量的方法：
 
@@ -92,9 +97,7 @@ title:  UITableView 组件化
 * 自动 cell 高度缓存
 * 通过 ListDiff 算法实现的 section 局部刷新
 
-在开启高度重用的选项时， M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新 UITableView 则自动获取对应的高度而不再需要额外计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，可以通过返回不同的 diffableHash 来实现。
-
-ListDiff 的场景也是大同小异，cell component 的 diffableHash 做为唯一标示，判断 old components 和 new components 中各个 component 需要 hash 到哪些桶中，尔后将冲突桶中的 component 标记为 update/move，而不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后逐个操作 component，能够在保证性能的前提下，保证高效的开发效率和合适的界面表现。
+适用 ListDiff 时，cell component 的 diffableHash 将做为唯一标示，判断 old components 和 new components 中各个 component 需要 hash 到哪些桶中，尔后将冲突桶中的 component 标记为 move，而不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后逐个操作 component，能够在保证性能的前提下，保证高效的开发效率和合适的界面表现。
 
 
 ## 使用贴士
@@ -102,8 +105,7 @@ ListDiff 的场景也是大同小异，cell component 的 diffableHash 做为唯
 不同于以往构建 UITableView 的常见用法，使用 M80TableViewComponent 更推荐使用 **声明式** 而非 **命令式** 的做法进行使用。
 落实到实际操作上
 
-* 如果涉及单个 cell 的操作，推荐使用 cell component 本身的方法，如 remove，reload 方法
+* 如果涉及单个 cell 的操作，直接使用 cell component 本身的方法，如 remove，reload 方法
 * 涉及到单个 section 内 cell 变化，可以考虑每次重新 setComponents 或 reloadUsingListDiff
-* 涉及到多 section 多 cell 变化，则可以重新组装所有 component，而不是不停增删各个 component，一方面这样做比较简单，不容易出错。另一方面 component 只是 ViewModel，再真正刷新前的批量操作并不会有过多的性能问题，而 UITableView 本身的刷新机制也可以保证再重置 component 后获得不错的性能。
-
+* 涉及到多 section 多 cell 变化，则可以重新组装所有 component，而不是不停增删各个 component，一方面这样做比较简单，不容易出错。另一方面 component 只是 ViewModel，再真正刷新前的批量操作并不会有过多的性能问题。
 
