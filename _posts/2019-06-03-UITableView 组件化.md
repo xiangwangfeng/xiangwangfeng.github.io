@@ -9,7 +9,7 @@ title:  UITableView 组件化
 
 * 繁琐的重用流程
 
-几乎所有 TableView Adapter 中都有如下的代码 `registerClass(Nib):forCellReuseIdentifier` 来保证 cell 的重用。然而千篇一律的注册方法，写多了难免乏味。同时如何给 cell 设置一个有意义的 reuseIdentifier 又会成为强迫症程序员的烦恼之一。
+几乎所有 TableView Adapter 中都有如下的代码 `registerClass(Nib):forCellReuseIdentifier` 进行 cell 重用的注册，后续又需要使用 `dequeueReusableCellWithIdentifier:` 获取对应 cell ---- 写多了难免乏味。同时如何给 cell 设置一个有意义且不重复的 reuseIdentifier 又会成为众多强迫症程序员的烦恼之一。
 
 * 不安全的 model 和 cell 映射关系
 
@@ -36,7 +36,7 @@ title:  UITableView 组件化
 * M80TableViewSectionComponent
 * M80TableViewCellComponent
 
-顾名思义，他们分别对应 UITableView 中的 UITableView，Section 和 UITableViewCell。用前端技术做类比的话，M80TableViewComponent 就是我们定义的 VirtualDOM，而 UITableView 则是真正的 DOM，前者记录虚拟的层次结构，后者仍负责最终的渲染。具体参考下图：
+顾名思义，他们分别对应 UITableView 中的 UITableView，Section 和 UITableViewCell。用前端技术做类比的话，M80TableViewComponent 就是我们定义的 VirtualDOM，而 UITableView 则是真正的 DOM：前者记录虚拟的层次结构，后者仍负责最终的渲染。具体关系参考下图：
 
 ![](../images/component_arch.jpg)
 
@@ -75,14 +75,9 @@ title:  UITableView 组件化
 
 ### 自动重用
 
-每一个 M80TableViewCellComponent 在第一次被使用时都会通过 `M80TableViewComponentRegister` 根据上下文信息自动绑定 reuseIdentifier 和 cellClass 的关系，完成 cell 重用的第一步。并在后续的 `tableView:cellForRowAtIndexPath:` 方法中获取重用的 cell 进行配置。
+每一个 M80TableViewCellComponent 在第一次被使用时都会通过 `M80TableViewComponentRegister` 根据上下文信息自动绑定 reuseIdentifier 和 cellClass 的关系，完成 cell 的重用。这里 M80TableViewCellComponent 会直接使用当前 cell component 的类名作为 reuseIdentifier，既能保证不与其他 cell 重名，又省去了取名之苦。
 
-### 高度优化
-
-M80TableViewCellComponent 自带预计算高度的能力，只需在组装完成后调用 `measure` 方法，cell component 就会自动记录当前内容所需高度以供后续使用。同时整个组件也自带了高度缓存功能，所有的 cell component 都会有自己独一无二的 `diffableHash`，在开启高度重用的选项(`cellHeightCacheEnabled`)时， M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新 UITableView 则自动获取对应的高度而不再需要额外计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，可以通过返回不同的 diffableHash 来实现。
-
-
-### ListDiff
+### 高度优化 和 ListDiff
 
 在 iOS 中比较蛋疼的事情是如何判断两个对象相等：在不使用 runtime 的场景下，往往需要业务层添加大量冗余代码用于支持对象比较，而使用了 runtime 又会对业务侵入过多。在 M80TableViewComponent 中我们使用了一种不基于 runtime 且比较轻量的方法：
 
@@ -90,14 +85,17 @@ M80TableViewCellComponent 自带预计算高度的能力，只需在组装完成
 
 * - (NSString *)diffableHash;
 
-而默认情况下，每个 cell component 在初始化时都会有自己唯一的 cellIdentifier 作为 diffableHash。
+默认情况下，每个 cell component 在初始化时都会有自己唯一的 cellIdentifier 作为 diffableHash。
 
 这个协议有如下两个场景的应用
 
 * 自动 cell 高度缓存
 * 通过 ListDiff 算法实现的 section 局部刷新
 
-适用 ListDiff 时，cell component 的 diffableHash 将做为唯一标示，判断 old components 和 new components 中各个 component 需要 hash 到哪些桶中，尔后将冲突桶中的 component 标记为 move，而不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后逐个操作 component，能够在保证性能的前提下，保证高效的开发效率和合适的界面表现。
+在开启高度重用的选项(`cellHeightCacheEnabled`)时， M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新 UITableView 时将自动获取对应的高度而不再需要额外计算。而当一个 cell 有多重状态，需要在不同状态下展示不同高度时，可以通过业务状态返回不同的 diffableHash 来高度切换。除了高度缓存外，M80TableViewComponent 也提供了一种简单的预计算高度的机制，在组装完 cell component 后，只需要简单调用基类方法 `measure` 就可以直接预计算高度以供后续使用。
+
+
+适用 ListDiff 时，cell component 的 diffableHash 将做为唯一标识，判断 old components 和 new components 中各个 component 需要 hash 到哪些桶中，尔后将冲突桶中的 component 标记为 move，而不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后逐个操作 component，能够在保证性能的前提下，保证高效的开发效率和合适的界面表现。
 
 
 ## 使用贴士
