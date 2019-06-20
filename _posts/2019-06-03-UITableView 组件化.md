@@ -73,6 +73,12 @@ title:  UITableView 组件化
 
 当我们使用组件时，一旦当前 M80TableViewComponent 和 UITableView 关联，后续针对 M80TableViewComponent 的所有操作都会实时反应到 UITableView 之上，包括对 cell component 的移除，刷新，插入，以及 section component 的插入，移除和刷新。我们不再需要繁琐的通过 controller 同时操作 view 和 model 以保证其一致性，只需要单纯操作 component 即可：component 将根据自身层次结构计算出对应的 UI 层次结构，在修改 component 内部结构的同时也会自动获取到对应的 cell 对象进行修改。这样做的好处是上层开发只需要关注 component 即可，而不再关心 indexPath 相关的计算过程，从而规避了一些常见的 indexPath 计算越界问题。
 
+### 灵活组装功能
+
+不同于其他以 ViewController (或者其他 Adapter) 作为可重用组件的方案，M80TableViewComponent 在组合重用上更灵活。使用时可以直接复用一个 M80TableViewComponent 中的某几个 section component 或 cell component，更加灵活，只需要重新进行业务逻辑上的组装即可。
+
+
+
 ### 自动重用
 
 每一个 M80TableViewCellComponent 在第一次被使用时都会通过 `M80TableViewComponentRegister` 根据上下文信息自动绑定 reuseIdentifier 和 cellClass 的关系，完成 cell 的重用。默认使用当前 cell component 的类名作为 reuseIdentifier，既能保证不与其他 cell 重名，又省去了取名之苦。
