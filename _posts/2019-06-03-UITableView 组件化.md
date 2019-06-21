@@ -75,15 +75,14 @@ title:  UITableView 组件化
 
 ### 灵活组装功能
 
-不同于其他以 ViewController (或者其他 Adapter) 作为可重用组件的方案，M80TableViewComponent 在组合重用上更灵活。使用时可以直接复用一个 M80TableViewComponent 中的某几个 section component 或 cell component，更加灵活，只需要重新进行业务逻辑上的组装即可。
-
+使用 M80TableViewComponent 可以轻易支持多种不同类型的数据模型，同时由于将复用层次从 ViewController/TableView 下降到 Cell/Section Component 层次，也利于不同场景里的重复组合使用。
 
 
 ### 自动重用
 
 每一个 M80TableViewCellComponent 在第一次被使用时都会通过 `M80TableViewComponentRegister` 根据上下文信息自动绑定 reuseIdentifier 和 cellClass 的关系，完成 cell 的重用。默认使用当前 cell component 的类名作为 reuseIdentifier，既能保证不与其他 cell 重名，又省去了取名之苦。
 
-### 高度优化 和 ListDiff
+### 高度优化和局部刷新
 
 在 iOS 中比较蛋疼的事情是如何判断两个对象相等：在不使用 runtime 的场景下，往往需要业务层添加大量冗余代码用于支持对象比较，而使用了 runtime 又会对业务侵入过多。在 M80TableViewComponent 中我们使用了一种不基于 runtime 且比较轻量的方法：
 
@@ -98,11 +97,10 @@ title:  UITableView 组件化
 * 自动 cell 高度缓存
 * 通过 ListDiff 算法实现的 section 局部刷新
 
-在开启高度重用的选项(`cellHeightCacheEnabled`)时， M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新 UITableView 时将自动获取对应高度而无需再次计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，则可以通过业务状态返回不同的 diffableHash 进行高度切换。除了高度缓存外，M80TableViewComponent 也提供了一种预计算高度的机制，在组装完 cell component 后，只需要简单调用基类方法 `measure` 就可以直接完成预计算。
+当 cell component 的 shouldCacheHeight 属性返回 YES 时，M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新 UITableView 时将自动获取对应高度而无需再次计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，则可以通过业务状态返回不同的 diffableHash 进行高度切换。除了高度缓存外，M80TableViewComponent 也提供了一种预计算高度的机制，在组装完 cell component 后，只需要简单调用基类方法 `measure` 就可以直接完成预计算。
 
 
-//check point here
-而适用 ListDiff 时，cell component 的 diffableHash 将做为唯一标识，判断 old components 和 new components 中各个 component 需要 hash 到哪些桶中，尔后将冲突桶中的 component 标记为 move，而不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后逐个操作 component，能够在保证性能的前提下，保证高效的开发效率和合适的界面表现。
+而适用 ListDiff 时，cell component 的 diffableHash 将做为唯一标识，判断 old components 和 new components 中各个 component 需要 hash 到哪些桶中，尔后将冲突桶中的 component 标记为 move，而不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后逐个操作 component，能够在保证性能的前提下，简化开发过程。
 
 
 ## 使用贴士
