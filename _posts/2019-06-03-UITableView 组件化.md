@@ -5,28 +5,28 @@ title:  UITableView 组件化
 
 # 源起
 
-在 iOS 开发中，UITableView 可以说是最常用的控件了。几行代码，实现对应方法，系统就会给你呈现一个 60 帧无比流畅的列表，让初学者成就感爆棚。然而随着开发的深入，我们就会慢慢觉察到当前的 UITableView 实现会有这样或那样的问题。
+在 iOS 开发中，UITableView 可以说是最常用的控件。几行代码，实现对应方法，系统就会给你呈现一个 60 帧无比流畅的列表，让初学者成就感爆棚。然而随着开发的深入，我们就会慢慢觉察到当前的 UITableView 实现会有这样或那样的问题。
 
 * 繁琐的重用流程
 
-几乎所有 TableView Adapter 中都有如下的代码 `registerClass(Nib):forCellReuseIdentifier` 进行 cell 重用的注册，后续又需要使用 `dequeueReusableCellWithIdentifier:` 获取对应 cell ---- 写多了难免觉得重复乏味。同时如何给 cell 设置一个有意义且不重复的 reuseIdentifier 又会成为众多强迫症程序员的烦恼之一。
+几乎所有 TableView Adapter 中都有如下的代码 `registerClass(Nib):forCellReuseIdentifier` 进行 cell 重用的注册，后续又需要使用 `dequeueReusableCellWithIdentifier:` 获取对应 cell。苹果的这套重用机制对于开发者来说相当简单友好，但写多了难免觉得重复乏味。同时如何给 cell 设置一个有意义且不重复的 reuseIdentifier 又会成为众多强迫症程序员的烦恼之一。
 
 * 不安全的 model 和 cell 映射关系
 
-随着业务深入，一个 UITableView 往往会包含多种 model，对应不同形式的 cell，那么建立 model 和 cell 的映射关系就会非常蛋疼，无论是if else，switch，还是 map<model,cell> 都不是那么的优雅，每当 model 类型有所增删，开发者往往需要心惊胆战地检查各处实现方法里是否正确添加或删除了相应的映射关系。
+随着业务深入，一个 UITableView 往往会包含多种 model，对应不同形式的 cell，那么建立 model 和 cell 的映射关系就会非常蛋疼，无论是if else，switch，还是 map<model,cell> 都不是那么的优雅，每当 model 类型有所增删，开发者往往需要心惊胆战地检查各处实现方法里是否进行了正确的处理。
 
 * 单调的优化过程
 
-业务继续深入，为了保证相关代码整洁，易于拓展和性能高效，除了维护 model 和 class 关系(`ModelCellMap`)外，我们往往需要引入各种类做职责分离：`DataSource` 管理数据源，`LayoutManager` 负责排版和提供预计算高度能力，`CellHeightCache` 提供高度缓存，这样可以一定程度减轻代码膨胀的问题。但也不是完美的：套路都是一样的，即使你熟练掌握了这些所谓的设计原则，在实际操作中还是有大量的重复代码。
+业务继续深入，为了保证相关代码整洁，易于拓展和性能高效，除了维护 model 和 cell 关系(`ModelCellMap`)外，我们往往需要引入各种类做职责分离：`DataSource` 管理数据源，`LayoutManager` 负责排版和提供预计算高度能力，`CellHeightCache` 提供高度缓存，`Interactor` 提供事件路由和处理等等，这样可以一定程度减轻代码膨胀的问题。但也不是完美的：套路都是类似的，即使你熟练掌握了这些所谓的设计原则，在实际操作中仍有大量的重复代码。
 
 
-* 数据源和 UI 并非绑定关系
+* 数据源和 UI 不绑定
 
-当 model 变化时，我们往往需要通过当前 model 的位置反推出对应 cell 在 UITableView 中的位置(即 `indexPath`)，然后做相应的更新处理，反之亦然。但这部分工作无非是数组遍历，寻找 index，重复且繁琐，稍有不慎还有出错导致崩溃的可能。
+当 model 变化时，我们往往需要通过当前 model 位置反推出 cell 在 UITableView 中的位置(即 `indexPath`)，然后做相应的更新处理，反之亦然。但这部分工作无非是数组遍历，寻找 index，重复且繁琐，稍有不慎还有出错导致崩溃的可能。
 
 # 组件化方案
 
-为了解决如上问题，同时也受到 IGListKit 和 React.js 的启发，M80TableViewComponent 提出了一种组件化的解决方案，实现类似 React.js 的“单向数据绑定”功能，同时将大量的重复计算归纳在组件内部，上层使用者只需要根据当前业务创建相应组件并组合使用即可。
+为了解决如上问题，同时也受到 IGListKit 和 React.js 的启发，M80TableViewComponent 提出了一种组件化的解决方案，实现类似 React.js 的 "单向数据绑定" 功能，同时将大量的重复计算归纳在组件内部，上层使用者只需要根据当前业务创建相应组件并组合使用即可。
 
 ## 基础组件
 
@@ -51,7 +51,7 @@ title:  UITableView 组件化
 这是一个用于文本列表显示的组件，只实现最基本组件协议
 
 * 当前组件对应何种 UITableViewCell：   - (Class)cellClass
-* 当前组件对应的 UITableViewCell 高度是多少: - (CGFloat)height
+* 当前组件对应 UITableViewCell 高度是多少: - (CGFloat)height
 * 如何通过当前组件配置 UITableViewCell: - (void)configure:(UITableViewCell *)cell
 
 
@@ -71,11 +71,11 @@ title:  UITableView 组件化
 
 ### 单向绑定
 
-当我们使用组件时，一旦当前 M80TableViewComponent 和 UITableView 关联，后续针对 M80TableViewComponent 的所有操作都会实时反应到 UITableView 之上，包括对 cell component 的移除，刷新，插入，以及 section component 的插入，移除和刷新。我们不再需要繁琐的通过 controller 同时操作 view 和 model 以保证其一致性，只需要单纯操作 component 即可：component 将根据自身层次结构计算出对应的 UI 层次结构，在修改 component 内部结构的同时也会自动获取到对应的 cell 对象进行修改。这样做的好处是上层开发只需要关注 component 即可，而不再关心 indexPath 相关的计算过程，从而规避了一些常见的 indexPath 计算越界问题。
+当我们使用组件时，一旦当前 M80TableViewComponent 和 UITableView 关联，后续针对 M80TableViewComponent 的所有操作都会实时反应到 UITableView 之上，包括对 cell component 的移除，刷新，插入，以及 section component 的插入，移除和刷新。我们不再需要繁琐地通过 controller 同时操作 view 和 model 以保证其一致性，只需要单纯操作 component 即可：component 将根据自身层次结构计算出对应的 UI 层次结构，在修改 component 内部结构的同时也会自动获取到对应的 cell 对象进行修改。这样做的好处是上层开发只需要关注 component 即可，而不再关心 indexPath 相关的计算过程，从而规避繁复的 indexPath 计算和可能的计算错误带来的崩溃风险。
 
 ### 灵活组装功能
 
-使用 M80TableViewComponent 可以轻易支持多种不同类型的数据模型，同时由于将复用层次从 ViewController/TableView 下降到 Cell/Section Component 层次，也利于不同场景里的重复组合使用。
+使用 M80TableViewComponent 可以轻易支持多种不同类型的数据模型，同时由于我们将复用层次从 vc/tableview 下降到 cell/section component 层次，也更方便了在不同场景下的组合使用。
 
 
 ### 自动重用
@@ -97,17 +97,17 @@ title:  UITableView 组件化
 * 自动 cell 高度缓存
 * 通过 ListDiff 算法实现的 section 局部刷新
 
-当 cell component 的 shouldCacheHeight 属性返回 YES 时，M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新 UITableView 时将自动获取对应高度而无需再次计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，则可以通过业务状态返回不同的 diffableHash 进行高度切换。除了高度缓存外，M80TableViewComponent 也提供了一种预计算高度的机制，在组装完 cell component 后，只需要简单调用基类方法 `measure` 就可以直接完成预计算。
+但开启高度缓存选项时，M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新将自动获取对应高度而无需再次计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，则可以通过业务状态返回不同的 diffableHash 进行高度切换。除了高度缓存外，M80TableViewComponent 也提供了一种预计算高度的机制，在组装完 cell component 后，只需要简单调用基类方法 `measure` 就可以直接完成预计算。
 
 
-而适用 ListDiff 时，cell component 的 diffableHash 将做为唯一标识，判断 old components 和 new components 中各个 component 需要 hash 到哪些桶中，尔后将冲突桶中的 component 标记为 move，而不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后逐个操作 component，能够在保证性能的前提下，简化开发过程。
+而适用局部刷新时，cell component 的 diffableHash 将做为唯一标识:old components 和 new components 根据 diffableHash 被 hash 到不同桶内，冲突桶中的 component 标记为 move，不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后进行逐一操作，能够在保证性能的前提下，简化开发过程和良好的界面表现。
 
 
 ## 使用贴士
 
-不同于以往构建 UITableView 的常见用法，使用 M80TableViewComponent 更推荐使用 **声明式** 而非 **命令式** 的做法进行使用。落实到实际操作上
+不同于以往构建 UITableView 的常见用法，使用 M80TableViewComponent 推荐所有操作都针对 component 进行。
 
-* 如果涉及单个 cell 的操作，直接使用 cell component 本身的方法，如 remove，reload 方法。
-* 涉及到单个 section 内 cell 变化，可以考虑每次重新 setComponents 或调用 reloadUsingListDiff 进行局部刷新。
-* 涉及到多 section 多 cell 变化，则可以重新组装所有 component，一方面这样做比较简单，不容易出错。另一方面 component 只是 viewmodel，在真正刷新前的批量操作并不会有过多的性能问题。
+* 涉及单个 cell 的操作，直接使用 cell component 本身的方法，如 remove，reload 方法。
+* 涉及到单个 section 内多个 cell 变化，可以考虑每次重新 setComponents 或调用 reloadUsingListDiff 进行局部刷新。
+* 涉及到多 section 多 cell 变化，则可以重新组装所有 component。一方面这样做比较简单，不容易出错。另一方面 component 只是 viewmodel，在真正刷新前的批量操作并不会有过多性能问题。
 
