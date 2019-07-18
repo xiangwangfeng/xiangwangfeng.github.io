@@ -86,7 +86,7 @@ title:  UITableView 组件化
 
 在 iOS 中比较蛋疼的事情是如何判断两个对象相等：在不使用 runtime 的场景下，往往需要业务层添加大量冗余代码用于支持对象比较，而使用了 runtime 又会对业务侵入过多。在 M80TableViewComponent 中我们使用了一种不基于 runtime 且比较轻量的方法：
 
-所有的 M80TableViewComponent 都可以遵循 M80ListDiffable 协议，以用于组件内部的一致性判断:
+所有的 M80TableViewCellComponent 都遵循 M80ListDiffable 协议，以用于组件内部的一致性判断:
 
 * - (NSString *)diffableHash;
 
@@ -97,7 +97,7 @@ title:  UITableView 组件化
 * 自动 cell 高度缓存
 * 通过 ListDiff 算法实现的 section 局部刷新
 
-但开启高度缓存选项时，M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新将自动获取对应高度而无需再次计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，则可以通过业务状态返回不同的 diffableHash 进行高度切换。除了高度缓存外，M80TableViewComponent 也提供了一种预计算高度的机制，在组装完 cell component 后，只需要简单调用基类方法 `measure` 就可以直接完成预计算。
+当开启高度缓存选项时，M80TableViewComponent 计算 cell 高度后会自动记录 diffableHash 和 height 的对应关系。后续再次刷新将自动获取对应高度而无需再次计算。当一个 cell 有多重状态，需要在不同状态下展示不同高度时，则可以通过业务状态返回不同的 diffableHash 进行高度切换。除了高度缓存外，M80TableViewComponent 也提供了一种预计算高度的机制，在组装完 cell component 后，只需要简单调用基类方法 `measure` 就可以直接完成预计算。
 
 
 而适用局部刷新时，cell component 的 diffableHash 将做为唯一标识:old components 和 new components 根据 diffableHash 被 hash 到不同桶内，冲突桶中的 component 标记为 move，不冲突桶中的 component 则为 add/remove。详细算法可参考 M80ListDiff 函数。在合适的场景下，使用 ListDiff 进行 section 的重新载入，而不是人工计算各种变化信息后进行逐一操作，能够在保证性能的前提下，简化开发过程和良好的界面表现。
@@ -108,6 +108,6 @@ title:  UITableView 组件化
 不同于以往构建 UITableView 的常见用法，使用 M80TableViewComponent 推荐所有操作都针对 component 进行。
 
 * 涉及单个 cell 的操作，直接使用 cell component 本身的方法，如 remove，reload 方法。
-* 涉及到单个 section 内多个 cell 变化，可以考虑每次重新 setComponents 或调用 reloadUsingListDiff 进行局部刷新。
+* 涉及单个 section 内多个 cell 变化，可以考虑每次重新 setComponents 或调用 reloadUsingListDiff 进行局部刷新。
 * 涉及到多 section 多 cell 变化，则可以重新组装所有 component。一方面这样做比较简单，不容易出错。另一方面 component 只是 viewmodel，在真正刷新前的批量操作并不会有过多性能问题。
 
