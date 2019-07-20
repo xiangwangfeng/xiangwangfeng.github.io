@@ -62,7 +62,7 @@ title:  UITableView 组件化
  
 ![](../images/component_usage.png)
 
-具体效果详见 Example Project
+具体效果详见 [Example Project](https://github.com/xiangwangfeng/M80TableViewComponent)
 
 
 ## 特性
