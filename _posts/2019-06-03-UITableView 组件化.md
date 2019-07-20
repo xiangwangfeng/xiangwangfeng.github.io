@@ -71,7 +71,7 @@ title:  UITableView 组件化
 
 ### 单向绑定
 
-当我们使用组件时，一旦当前 M80TableViewComponent 和 UITableView 关联，后续针对 M80TableViewComponent 的所有操作都会实时反应到 UITableView 之上，包括对 cell component 的移除，刷新，插入，以及 section component 的插入，移除和刷新。我们不再需要繁琐地通过 controller 同时操作 view 和 model 以保证其一致性，只需要单纯操作 component 即可：component 将根据自身层次结构计算出对应的 UI 层次结构，在修改 component 内部结构的同时也会自动获取到对应的 cell 对象进行修改。这样做的好处是上层开发只需要关注 component 即可，而不再关心 indexPath 相关的计算过程，从而规避繁复的 indexPath 计算和可能的计算错误带来的崩溃风险。
+当我们使用组件时，一旦当前 M80TableViewComponent 和 UITableView 关联，后续针对 M80TableViewComponent 的所有操作都会实时反应到 UITableView 之上，包括对 cell component 的移除，刷新，插入，以及 section component 的插入，移除和刷新。我们不再需要繁琐地通过 controller 同时操作 view 和 model 以保证其一致性，只需要单纯操作 component 即可：component 将根据自身层次结构计算出对应的 UI 层次结构，在修改 component 内部结构的同时也会自动获取到对应的 cell 对象进行修改。这样做的好处是上层开发只需要关注 component 即可，而不再关心 indexPath 相关的计算过程，从而规避繁复的 indexPath 计算及计算错误导致的崩溃。
 
 ### 灵活组装功能
 
