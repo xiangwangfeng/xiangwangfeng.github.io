@@ -38,7 +38,7 @@ title:  UITableView 组件化
 
 顾名思义，他们分别对应 UITableView，Section 和 UITableViewCell。用前端技术做类比的话，M80TableViewComponent 就是我们定义的 VirtualDOM，而 UITableView 则是真正的 DOM。前者记录虚拟的层次结构，后者仍负责最终的渲染。具体关系参考下图：
 
-![](../images/component_arch.jpg)
+![](/images/component_arch.jpg)
 
 ## 简单使用
 
@@ -46,7 +46,7 @@ title:  UITableView 组件化
 
 一个简单的 M80TableViewComponent 定义如下
 
-![](../images/item_component.png)
+![](/images/item_component.png)
 
 这是一个用于文本列表显示的组件，只实现最基本组件协议
 
@@ -60,7 +60,7 @@ title:  UITableView 组件化
 
 定义完组件后，我们只需要按照顺序将组件加入父组件中，即可完成和 UITableView 的绑定。 
  
-![](../images/component_usage.png)
+![](/images/component_usage.png)
 
 具体效果详见 [Example Project](https://github.com/xiangwangfeng/M80TableViewComponent)
 
