@@ -159,7 +159,7 @@ didReceiveResponse:(NSURLResponse *)response
     [self.client URLProtocolDidFinishLoading:self];
 }
 {% endhighlight %}
-在每个 delgate 的实现中我都刨去了工程中的特定实现(流量统计)，只保留了需要实现的最小 Protocol 集合。
+在每个 delegate 的实现中我都刨去了工程中的特定实现(流量统计)，只保留了需要实现的最小 Protocol 集合。
 
 ## NSURLProtocol 那些坑
 
