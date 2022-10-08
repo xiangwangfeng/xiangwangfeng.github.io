@@ -2,7 +2,7 @@
 
 ### 博客
 
-https://xiangwangfeng.com
+https://xiangwangfeng.github.io/
 
 
 ### wiki
