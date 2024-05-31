@@ -22,11 +22,9 @@ title: About
 
 ## Contact
 
-
 * Email 	:xiangwangfeng@gmail.com
 * Weibo 	:http://weibo.com/epmao	
 * Github	:https://github.com/xiangwangfeng
-* Comments	:https://github.com/xiangwangfeng/xiangwangfeng.github.io
 
 [1]:https://github.com/xiangwangfeng/tinyimage
 [2]:https://github.com/xiangwangfeng/httpclient
